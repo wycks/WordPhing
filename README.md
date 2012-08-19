@@ -51,7 +51,7 @@ http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 
 It is recommended to have the latest version of Phing
 This script REQUIRES some optional libraries (http, git, svn, etc).
-Intall them all via "install [--alldeps] phing/phing"
+Intall them all via `"install [--alldeps] phing/phing"`
 
 
 ##
