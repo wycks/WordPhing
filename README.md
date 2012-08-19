@@ -24,6 +24,8 @@ WordPress build and test system using Phing, this is beta
 - Open the folder in the cli
 - Type "phing install"
 
+**Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in these folder upon build without warning (will fix ).
+
 
 ##Notes
 
