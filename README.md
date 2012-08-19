@@ -19,7 +19,7 @@ WordPress build and test system using Phing, this is Beta, use at your own care.
 
 PHP/PEAR & Phing
 
-#Install
+##Install
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 
 It is recommended to have the latest version of Phing
