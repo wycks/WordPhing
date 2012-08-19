@@ -1,40 +1,66 @@
 WordPhing
 =========
 
-###WordPress build and test system using Phing. 
-This is Beta, use at your own risk.
+WordPress build and test system using Phing, this is beta
 
-- Automated Installing/Moving/Testing/Scripting and PHP'ing for WordPress from the command line.
-- Currently works and builds WordPress in about 25 seconds depending on your Internet connection.
+- Automated Installing/Moving/Testing/Scripting and PHP'ing WordPress from the command line
+- Currently works and builds WordPress in about 30 seconds depending on your Internet connection.
+
+
+*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc).*
+
+
+## What does it do?
+
+- Creates a new database
+- Downloads and installs WordPress (latest stable)
+- Download and installs plugins
+- Appends needed info to your wp-config
 
 ##Basic Instructions
 
-- Put the 2 files where you want to build wordpress, most likely in your htdoc folder
-- Open build.properties and set `build.dir.wp= "your folder"`
-- Make sure "your folder" is an empty folder! For example "buildwp/test".
-- Open a cli and mozy on over to your folder
+- Put the 2 files where you want to build WordPress, most likely in your stack root folder
+- Open build.properties and fill it out
+- Open the folder in the cli
 - Type "phing install"
-- Type what it asks you
 
+
+##Notes
+
+The folder "Prompt" is another working version that adds "prompts" to the command line instead of using a config file.
+For example it will ask your the name of the db you want to create, turn on debug, etc.
+
+Todo
+
+- Fix git & svn support
+- Add FTP support
+- Prompt for debug and other wp_configs in /prompt
+- Theme installs
+- Theme minify (yui-compress and google closure)
+- Moving, staging and backups (phing even has an amazon task)
+- Run some crazy tests (phpunit, phpmess)
+- Interact directly with  wp code
 
 ##Requires
 
-PHP 5.2 + & PEAR & Phing
+PHP/PEAR & Phing
 
-##Install Phing
+##Install
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 
-It is recommended to use the latest version of Phing
+It is recommended to have the latest version of Phing
 This script REQUIRES some optional libraries (http, git, svn, etc).
-Intall them all via `"install [--alldeps] phing/phing"`,  why not.
+Intall them all via "install [--alldeps] phing/phing"
 
 
 ##
 
-This is a fork of: https://github.com/etivite/phing-wordpress-installer/ to make it prompt friendly and add new features.
-If you just want to use config files, use the above instead.
+Thanks to: https://github.com/etivite/phing-wordpress-installer/ 
 
 Why Phing? Because it's built with PHP.
 https://github.com/phingofficial/phing
+
+
+
 
 
