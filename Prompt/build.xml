@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Build a WordPress Install" default="help" basedir="./">
+<!--
+
+#Thanks to:
+https://github.com/etivite/phing-wordpress-installer/
+
+#Requires: 
+PHP/PEAR & Phing
+
+#Install
+http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
+
+It is recommended to have the latest version of Phing
+This script REQUIRES some optional libraries (http, git, svn, etc).
+Intall them all via "install [--alldeps] phing/phing"
+
+Phing comes packed in most stacks by default and is found in the /php/PEAR folder.
+
+#Tested:
+lampp  & xampp (linux and windows)
+
+#Todo: 
+fix git & svn support
+Prompt for folder/dir
+Prompt for debug and other wp_configs
+Automate DB creation?
+Theme installs
+Theme minify -- staging
+Run some crazy tests
+
+-->
+
+<project name="Build WordPress" default="WordPress" description="Builds a complete WordPress install from the command line">
 
     <!-- Load the configuration file -->
     <property file="build.properties" />
@@ -12,25 +43,13 @@
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
 		<format property="buildtime" pattern="%a, %d %b %Y, %H:%M"/>
 	</tstamp>
-
-	<!-- create the database -->
-	<target name="database">
-	    <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
-	    <pdosqlexec url="${build.db.url}"
-	                userid="${build.db.userid}"
-	                password="${build.db.password}"
-	                onerror="continue"
-	                autocommit="true">
-	        CREATE DATABASE ${build.db.name};
-	    </pdosqlexec>        
-</target>
-
-    <!-- Clean the build directory this does not have any error chechking !-->
+	
+    <!-- Clean the build directory require check yes/no to make sure since this could be bad or just a prompt-->
     <target name="clean" description="Deletes previous WordPress install directory">
-
+		
         <echo msg="Cleaning build directory" />
         
-        <!-- remove root location -->
+        <!-- remove wordpress location -->
         <delete dir="${build.dir.wp}" includeemptydirs="true" failonerror="true" />
         
         <!-- remove temp location -->
@@ -40,13 +59,16 @@
 
     <!-- Prepare the build directory -->
     <target name="prepare" depends="clean" description="Creating new WordPress directory">
-
+		
         <echo msg="Preparing build directory" />
         
-        <!-- create our root location -->
+        <!-- create our htdoc location -->
         <mkdir dir="${build.dir.wp}" />
-               
-        <!-- create temp directories for downloads -->
+        
+        <!-- make this a prompt -->
+
+        
+        <!-- create temp directories for downloads, need to install wp and plugins at same time -->
         <mkdir dir="${build.dir.tmp}" />
         <mkdir dir="${build.dir.tmp.plugins}" />
         
@@ -54,17 +76,17 @@
     
     <!-- Download WordPress from .org -->
 	<target name="installwordpress" description="Download WordPress">
-
+				
 		<!-- download our wordpress zip -->
 		<httpget url="${build.download.wp.url}" dir="${build.dir.tmp}" />
-
+		
 		<!-- unzip wordpress - unable to extract to same dir -->
 		<untar todir="${build.dir.tmp.plugins}" >
 			<fileset dir="${build.dir.tmp}">
 				<include name="*.tar.gz"/>
 			</fileset>
 		</untar>
-
+		
 <!-- TODO - regex on filename for tar/zip and check
 		<unzip todir="${build.dir.tmp.plugins}" >
 			<fileset dir="${build.dir.tmp}">
@@ -72,10 +94,10 @@
 			</fileset>
 		</unzip>
 -->
-
-		<!-- move to dest  -->
+			
+		<!-- move to dest - hopefully the htdocs -->
 		<copy todir="${build.dir.wp}" includeemptydirs="true">
-
+		
 			<fileset dir="${build.dir.tmp.plugins}/wordpress" >
 			  <include name="**" />
 			</fileset>
@@ -86,67 +108,105 @@
 
     <!-- Download WordPress Plugins .org -->
 	<target name="downloadplugin" description="Download WordPress Plugin">
-
+		
 		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
 		<httpget url="${wppluginurl}" dir="${build.dir.tmp.plugins}" />
+		
+    </target>
+    
+    <!-- fetch wordpress git repo - which syncs with wp svn org 
+//gitclose
+//gitexport(archive)
+    -->
+    <target name="fetchgit" description="Fetch the source code">
+    
+        <echo msg="Grabbing WordPress source from github ..." />
+
+        <!-- Clone repository -->
+        <gitclone repository="${build.downoad.wp.git}"
+                  targetPath="${build.dir.wp}" />
+
+        <!-- Cleanup repository-->
+        <gitgc repository="${build.dir.wp}"
+               aggressive="true"
+               prune="1.week.ago" />
+    </target>
+    
+    <!-- Update the wp source code from git repo-->
+    <target name="pullgit" description="Update the source code">
+		
+        <echo msg="Updating WordPress source from github ..." />
+
+        <!-- pull from all remotes -->
+        <gitpull repository="${build.dir.wp}" all="true" />
 
     </target>
     
-   
-    <!-- this task will loop over properties list of wp plugins to install -->
+    <!-- we need wp.org svn's here as well
+//svnexport
+//svncheckout
+-->
+
+
+	<!-- this task will loop over properties list of wp plugins to install -->
 	<target name="installplugins" description="Download Plugins" >
-
+		
 		<!-- TODO - add a file of newline delimited plugin urls -->
-
+		
 		<!-- defined via properties file -->
 		<foreach list="${build.download.plugin.urls}" param="wppluginurl" target="downloadplugin" />
-
+		
 		<!-- unzip our collection of plugins -->
 		<unzip todir="${build.dir.wp}/wp-content/plugins" >
 			<fileset dir="${build.dir.tmp.plugins}">
 				<include name="*.zip"/>
 			</fileset>
 		</unzip>
-
+		
 		<!-- clean up zip files -->
 		<delete>
 			<fileset dir="${build.dir.tmp.plugins}">
 				<include name="*.zip"/>
 			</fileset>
 		</delete>
-
+			
 	</target>
-
+	
 	<target name="updatewpconfig">
 
 		<!-- append additional settings to wp-config.php file -->
 		<if>
-			<isset property="build.db.name"/>
+			<isset property="build.wp.config.db.name"/>
 			<then>
-
+			
 				<echo msg="Adding db connection info to wp-config.php" />
 
+				<input propertyname="db.name" promptChar=":">DB_NAME</input>
+			    <input propertyname="db.user" promptChar=":">DB_USER</input>
+			    <input propertyname="db.password" promptChar=":">DB_PASSWORD</input>
+			    <input propertyname="db.host" promptChar=":">DB_HOST (probably localhost)</input>
+				
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
 						<replaceregexp>
-							<regexp pattern="(define\('DB_NAME', ')\w+('\);)" replace="\1${build.db.name}\2"/>
-							<regexp pattern="(define\('DB_USER', ')\w+('\);)" replace="\1${build.db.userid}\2"/>
-							<regexp pattern="(define\('DB_PASSWORD', ')\w+('\);)" replace="\1${build.db.password}\2"/>
-							<regexp pattern="(define\('DB_HOST', ')\w+('\);)" replace="\1${build.db.wp.host}\2"/>
+							<regexp pattern="(define\('DB_NAME', ')\w+('\);)" replace="\1${build.wp.config.db.name}\2"/>
+							<regexp pattern="(define\('DB_USER', ')\w+('\);)" replace="\1${build.wp.config.db.user}\2"/>
+							<regexp pattern="(define\('DB_PASSWORD', ')\w+('\);)" replace="\1${build.wp.config.db.password}\2"/>
+							<regexp pattern="(define\('DB_HOST', ')\w+('\);)" replace="\1${build.wp.config.db.host}\2"/>
 						</replaceregexp>
 					</filterchain>
 				</reflexive>
 
 			</then>
 		</if>
-
+						  
 		<!-- append additional settings to wp-config.php file -->
 		<if>
 			<isset property="build.wp.config.append.filename"/>
 			<then>
-
+				
 				<echo msg="Adding external configs to wp-config.php" />
-
+				
 				<!-- a token exists around the salt keys - lets find/replace/add for next step - hookie -->
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
@@ -155,17 +215,21 @@
 						</replaceregexp>
 					</filterchain>
 				</reflexive>
-
+				
 			</then>
 		</if>
-
+	  
 		<!-- enable debug mode to wp-config.php file -->
+
+				<input propertyname="optionsChoice" validargs="yes,no">
+		  			Which you like to turn on Debugging?
+		        </input>
 		<if>
 			<isset property="build.wp.config.debug"/>
 			<then>
-
+				
 				<echo msg="Setting WP_DEBUG to true in wp-config.php" />
-
+				
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
 						<replaceregexp>
@@ -173,17 +237,17 @@
 						</replaceregexp>
 					</filterchain>
 				</reflexive>
-
+				
 			</then>
 		</if>		
-
+				  
 		<!-- replace the wp_ db prefix -->
 		<if>
 			<isset property="build.wp.config.db.prefix"/>
 			<then>
-
+				
 				<echo msg="Adding db prefix to wp-config.php" />
-
+				
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
 						<replaceregexp>
@@ -191,100 +255,94 @@
 						</replaceregexp>
 					</filterchain>
 				</reflexive>
-
+				
 			</then>
 		</if>
-
+		
 		<!-- TODO - download salt api https://api.wordpress.org/secret-key/1.1/salt/ and inject - wp-config already contains tokens around salt section -->
-
+		
 		<!-- TODO - we could download a lang here and change wplang settings -->
-
-
+		
+		
 		<!-- append additional settings to wp-config.php file -->
 		<if>
 			<isset property="build.wp.config.append.filename"/>
 			<then>
-
+				
 				<echo msg="Appending ${build.wp.config.append.filename} to wp-config.php" />
-
+				
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
 						<replacetokenswithfile begintoken="#!" endtoken="##" />
 					</filterchain>
 				</reflexive>
-
+				
 			</then>
 		</if>
-
+		
 	</target>
+	
 
- 	<!-- Delete temp dir !-->
-    <target name="cleantmp" description="Deletes tmp directory needed for install">
-
-        <echo msg="Cleaning tmp directory" />
-        
-        <!-- remove temp location -->
-        <delete dir="${build.dir.tmp}" includeemptydirs="true" failonerror="true" />
-        
-    </target>
-    
+	
 	<!-- our main installer -->
 	<target name="install" depends="prepare">
-
-		<!-- if this is a standard wordpress.org build -->
-
-		<phingcall target="database" />
-
-		<echo msg="Created a new database" />
 		
-		<phingcall target="installwordpress" />
-			
-        <echo msg="Copying wp-config.php" />
-
+		<!-- if this is a standard wordpress.org build, development git or svn -->
+		<if>
+			<equals arg1="${build.wp.type}" arg2="git" />
+			<then>
+				<phingcall target="fetchgit" />
+			</then>
+			<else>
+				<phingcall target="installwordpress" />
+			</else>
+		</if>
+				
+		<echo msg="Copying wp-config.php" />
+		
 		<copy file="${build.dir.wp}/wp-config-sample.php" tofile="${build.dir.wp}/wp-config.php" />
-
+		
 		<!-- overwrite values in wp-config.php -->
 		<phingcall target="updatewpconfig" />
-
+		
 		<!-- install additional wp plugins -->
 		<if>
 			<isset property="build.download.plugin.urls"/>
 			<then>
-
+		
 				<phingcall target="installplugins" />
-
-				<echo msg="Installing plugins" />
-
+				
 			</then>
 		</if>
-
-		<phingcall target="cleantmp" />
-
-		<echo msg="Deleteing tmp dir" />
-
-
-        <!-- think about permissions - every system is different - use conditional on builtin prop os.name
-        this won't work on windows -->
+		
+        <!-- think about permissions - every system is different - use conditional on builtin prop os.name -->
 <!--
         <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
         <chmod file="${build.dir.wp}" mode="0755" verbose="true" />
 -->    
         <!-- just a timestamp in wp-config.php -->
-        <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
-
-        <echo msg="All done" />
-
+        <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* Phing Built this install on ${buildtime} */${line.separator}" />
+	
+		
+		<!-- TODO - possible to go one step more with custom install.php file; move it to wordpress then use httpget on install.php -->
+	
+	
+	
 	</target>
+
+
+
 
 
     <!-- Display the available options -->
     <target name="help" description="Displays the available options">
-
+		
         <echo msg="Build options" />
         <echo msg="------------------" />
         
         <echo msg="$ phing install - Download and install WordPress and Plugins" />
-        <echo msg="$ phing  help - Displays the available options" />
+		<!-- <echo msg="$ phing install-wp-org.xml pullgit - Pull/Update existing WordPress install from git" /> -->
+        <echo msg="$ phing help - Displays the available options" />
         
     </target>
 
