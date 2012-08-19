@@ -24,15 +24,15 @@ PHP 5.2 + & PEAR & Phing
 ##Install Phing
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 
-It is recommended to have the latest version of Phing
+It is recommended to use the latest version of Phing
 This script REQUIRES some optional libraries (http, git, svn, etc).
-Intall them all via "install [--alldeps] phing/phing"  why not.
+Intall them all via `"install [--alldeps] phing/phing"`,  why not.
 
 
 ##
 
 This is a fork of: https://github.com/etivite/phing-wordpress-installer/ to make it prompt friendly and add new features.
-If you just want to use config files use the above instead.
+If you just want to use config files, use the above instead.
 
 Why Phing? Because it's built with PHP.
 https://github.com/phingofficial/phing
