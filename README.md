@@ -28,7 +28,7 @@ WordPress build and test system using Phing, this is beta
 ##Notes
 
 The folder "Prompt" is another working version that adds "prompts" to the command line instead of using a config file.
-For example it will ask your the name of the db you want to create, turn on debug, etc.
+For example it will ask you for the name of the db you want to create, turn on debug, etc.
 
 Todo
 
@@ -39,11 +39,12 @@ Todo
 - Theme minify (yui-compress and google closure)
 - Moving, staging and backups (phing even has an amazon task)
 - Run some crazy tests (phpunit, phpmess)
-- Interact directly with  wp code
+- Eliminate the WordPress setup script (title, admin login, email)
+- Interact directly with wp code
 
 ##Requires
 
-PHP/PEAR & Phing
+PHP & Phing
 
 ##Install
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
