@@ -21,7 +21,6 @@ WordPress build and test system using Phing, this is beta
 
 - Put the 2 files where you want to build WordPress, most likely in your stack root folder
 - Open build.properties and fill it out
-- Open the folder in the cli
 - Type "phing install"
 
 **Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in these folder upon build without warning (will fix ).
@@ -46,7 +45,7 @@ Todo
 
 ##Requires
 
-PHP & Phing
+PHP 5.2 + & Phing
 
 ##Install
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements

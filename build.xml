@@ -5,7 +5,7 @@
     <!-- Load the configuration file -->
     <property file="build.properties" />
     
-    <!-- set a static prop -->
+    <!-- set a temp dir -->
     <property name="build.dir.tmp.plugins" value="${build.dir.tmp}/plugins"/>
 
 	<tstamp>
@@ -13,19 +13,20 @@
 		<format property="buildtime" pattern="%a, %d %b %Y, %H:%M"/>
 	</tstamp>
 
-	<!-- create the database -->
+	<!-- Create the database -->
+	<!-- Errors are handled by mySQL -->
 	<target name="database">
 	    <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
 	    <pdosqlexec url="${build.db.url}"
 	                userid="${build.db.userid}"
 	                password="${build.db.password}"
-	                onerror="continue"
+	                onerror="abort"
 	                autocommit="true">
 	        CREATE DATABASE ${build.db.name};
 	    </pdosqlexec>        
-</target>
+	</target>
 
-    <!-- Clean the build directory this does not have any error chechking !-->
+    <!-- Clean the build directory this does not have any error checking !-->
     <target name="clean" description="Deletes previous WordPress install directory">
 
         <echo msg="Cleaning build directory" />
@@ -65,14 +66,6 @@
 			</fileset>
 		</untar>
 
-<!-- TODO - regex on filename for tar/zip and check
-		<unzip todir="${build.dir.tmp.plugins}" >
-			<fileset dir="${build.dir.tmp}">
-				<include name="*.zip"/>
-			</fileset>
-		</unzip>
--->
-
 		<!-- move to dest  -->
 		<copy todir="${build.dir.wp}" includeemptydirs="true">
 
@@ -84,7 +77,7 @@
 
     </target>
 
-    <!-- Download WordPress Plugins .org -->
+    <!-- Download WordPress Plugins .org need to add Themes-->
 	<target name="downloadplugin" description="Download WordPress Plugin">
 
 		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
@@ -201,6 +194,7 @@
 
 
 		<!-- append additional settings to wp-config.php file -->
+
 		<if>
 			<isset property="build.wp.config.append.filename"/>
 			<then>
@@ -227,8 +221,12 @@
         <delete dir="${build.dir.tmp}" includeemptydirs="true" failonerror="true" />
         
     </target>
+
     
-	<!-- our main installer -->
+	<!-- Our main installer 
+	 * This will install the DB and WordPress
+
+	-->
 	<target name="install" depends="prepare">
 
 		<!-- if this is a standard wordpress.org build -->
@@ -258,19 +256,66 @@
 			</then>
 		</if>
 
-		<phingcall target="cleantmp" />
-
-		<echo msg="Deleteing tmp dir" />
-
-
-        <!-- think about permissions - every system is different - use conditional on builtin prop os.name
-        this won't work on windows -->
+		
+       <!--  Permissions - every system is different - customize this based on your environment.
+             this won't work on windows -->
 <!--
         <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
         <chmod file="${build.dir.wp}" mode="0755" verbose="true" />
 -->    
+
         <!-- just a timestamp in wp-config.php -->
         <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
+
+        <phingcall target="cleantmp" />
+
+        <echo msg="All done" />
+
+	</target>
+
+
+	<!-- Our main installer 
+	 * This will install only WordPress (no database)
+
+	-->
+
+	<target name="install-wp" depends="prepare">
+
+		<!-- if this is a standard wordpress.org build -->
+
+		<phingcall target="installwordpress" />
+			
+        <echo msg="Copying wp-config.php" />
+
+		<copy file="${build.dir.wp}/wp-config-sample.php" tofile="${build.dir.wp}/wp-config.php" />
+
+		<!-- overwrite values in wp-config.php -->
+		<phingcall target="updatewpconfig" />
+
+		<!-- install additional wp plugins -->
+		<if>
+			<isset property="build.download.plugin.urls"/>
+			<then>
+
+				<phingcall target="installplugins" />
+
+				<echo msg="Installing plugins" />
+
+			</then>
+		</if>
+
+		
+       <!--  Permissions - every system is different - customize this based on your environment.
+             this won't work on windows -->
+<!--
+        <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
+        <chmod file="${build.dir.wp}" mode="0755" verbose="true" />
+-->    
+
+        <!-- just a timestamp in wp-config.php -->
+        <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
+
+        <phingcall target="cleantmp" />
 
         <echo msg="All done" />
 
@@ -283,8 +328,10 @@
         <echo msg="Build options" />
         <echo msg="------------------" />
         
-        <echo msg="$ phing install - Download and install WordPress and Plugins" />
-        <echo msg="$ phing  help - Displays the available options" />
+        <echo msg="$ phing install - Creates a new database, downloads and installs WordPress and Plugins" />
+        <echo msg="$ phing install-wp - Downloads and installs WordPress and Plugins" />
+        <echo msg="$ phing help - Displays the available options" />
+
         
     </target>
 
