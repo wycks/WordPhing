@@ -21,23 +21,22 @@ WordPress build and test system using Phing, this is beta
 
 - Put the 2 files where you want to build WordPress, most likely in your stack root folder
 - Open build.properties and fill it out
-- Type `"phing install"` to create database and wordpress
-- Type `"phing install-wp"` to create wordpress (will not create a database)
+- Type `"phing install"`    Create a database and WordPress
+- Type `"phing install-wp"` Create just WordPress (will not create the database)
 
-**Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in these folder upon build without warning (will fix ).
+**Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in those folders upon build without warning (will fix ).
 
 
 ##Notes
 
 The folder "Prompt" is another working version that adds "prompts" to the command line instead of using a config file.
-For example it will ask you for the name of the db you want to create, turn on debug, etc.
+For example it will ask you for the name of the db you want to create, turn on debug, etc. I'm not keeping it as up to date as the config version.
 
 Todo
 
 - Fix git & svn support
 - Add FTP support
-- Prompt for debug and other wp_configs in /prompt
-- Theme installs
+- Test Theme installs
 - Theme minify (yui-compress and google closure)
 - Moving, staging and backups (phing even has an amazon task)
 - Run some crazy tests (phpunit, phpmess)

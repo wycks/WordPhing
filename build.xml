@@ -162,7 +162,7 @@
 
 	<target name="updatewpconfig">
 
-		<!-- append additional settings to wp-config.php file -->
+		<!-- append needed settings to wp-config.php file -->
 		<if>
 			<isset property="build.db.name"/>
 			<then>
@@ -183,7 +183,7 @@
 			</then>
 		</if>
 
-		<!-- append additional settings to wp-config.php file -->
+		<!-- append additional files to wp-config.php file -->
 		<if>
 			<isset property="build.wp.config.append.filename"/>
 			<then>
@@ -207,12 +207,30 @@
 			<isset property="build.wp.config.debug"/>
 			<then>
 
-				<echo msg="Setting WP_DEBUG to true in wp-config.php" />
+				<echo msg="Setting WP_DEBUG in wp-config.php" />
 
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
 						<replaceregexp>
 							<regexp pattern="(define\('WP_DEBUG', )\w+(\);)" replace="\1true\2"/>
+						</replaceregexp>
+					</filterchain>
+				</reflexive>
+
+			</then>
+		</if>
+
+		<!-- enable SAVEQUERIES  debug  to wp-config.php file -->
+		<if>
+			<isset property="build.wp.config.savequeries"/>
+			<then>
+
+				<echo msg="Setting SAVEQUERIES in wp-config.php" />
+
+				<reflexive file="${build.dir.wp}/wp-config.php">
+					<filterchain>
+						<replaceregexp>
+							<regexp pattern="(define\('SAVEQUERIES', )\w+(\);)" replace="\1true\2"/>
 						</replaceregexp>
 					</filterchain>
 				</reflexive>
