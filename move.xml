@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Move WordPress" default="help" basedir="./">
+
+<!--
+-----------------------------------------------------------	
+This will be a seperate build to move WordPress around:
+
+On local
+FTP
+Git/SVN
+Backups/SQL
+Amazon/etc 	
+
+Also minify css/js/html will be here
+-->
+
+</project>	

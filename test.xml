@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Test WordPress" default="help" basedir="./">
+
+<!--
+-----------------------------------------------------------	
+This will be a seperate build to test WordPress:
+
+CSStidy
+PHPunit
+SmartPHP
+PHPmess
+
+and a bunch of other error testing and runtime stats
+
+-->
+
+</project>	
