@@ -5,8 +5,9 @@
     <!-- Load the configuration file -->
     <property file="build.properties" />
     
-    <!-- set a temp dir -->
+    <!-- set a temp dirs -->
     <property name="build.dir.tmp.plugins" value="${build.dir.tmp}/plugins"/>
+    <property name="build.dir.tmp.themes" value="${build.dir.tmp}/themes"/>
 
 	<tstamp>
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
@@ -14,7 +15,9 @@
 	</tstamp>
 
 	<!-- Create the database -->
-	<!-- Errors are handled by mySQL -->
+	<!-- Errors are handled by mySQL 
+-------------------------------------------------------------------------- -->
+
 	<target name="database">
 	    <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
 	    <pdosqlexec url="${build.db.url}"
@@ -26,7 +29,9 @@
 	    </pdosqlexec>        
 	</target>
 
-    <!-- Clean the build directory this does not have any error checking !-->
+    <!-- Clean the build directory this does not have any error checking !
+-------------------------------------------------------------------------- -->
+
     <target name="clean" description="Deletes previous WordPress install directory">
 
         <echo msg="Cleaning build directory" />
@@ -39,7 +44,9 @@
         
     </target>
 
-    <!-- Prepare the build directory -->
+    <!-- Prepare the build directory 
+--------------------------------------------------------------------------- -->
+
     <target name="prepare" depends="clean" description="Creating new WordPress directory">
 
         <echo msg="Preparing build directory" />
@@ -50,10 +57,12 @@
         <!-- create temp directories for downloads -->
         <mkdir dir="${build.dir.tmp}" />
         <mkdir dir="${build.dir.tmp.plugins}" />
+        <mkdir dir="${build.dir.tmp.themes}" />
         
     </target>
     
-    <!-- Download WordPress from .org -->
+    <!-- Download WordPress from .org 
+----------------------------------------------------------------------------- -->
 	<target name="installwordpress" description="Download WordPress">
 
 		<!-- download our wordpress zip -->
@@ -77,7 +86,9 @@
 
     </target>
 
-    <!-- Download WordPress Plugins .org need to add Themes-->
+    <!-- Download WordPress Plugins 
+--------------------------------------------------------------------------------- -->
+
 	<target name="downloadplugin" description="Download WordPress Plugin">
 
 		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
@@ -86,7 +97,8 @@
     </target>
     
    
-    <!-- this task will loop over properties list of wp plugins to install -->
+    <!-- Loop over properties list of wp plugins to install 
+--------------------------------------------------------------------------------- -->
 	<target name="installplugins" description="Download Plugins" >
 
 		<!-- TODO - add a file of newline delimited plugin urls -->
@@ -109,6 +121,44 @@
 		</delete>
 
 	</target>
+
+	<!-- Download WordPress Themes 
+---------------------------------------------------------------------------------- -->
+	<target name="downloadtheme" description="Download WordPress Themes">
+
+		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
+		<httpget url="${wpthemeurl}" dir="${build.dir.tmp.themes}" />
+
+    </target>
+    
+   
+    <!-- Loop over properties list of wp themes to install 
+---------------------------------------------------------------------------------  -->
+	<target name="installthemes" description="Install themes" >
+
+		<!-- TODO - add a file of newline delimited plugin urls -->
+
+		<!-- defined via properties file -->
+		<foreach list="${build.download.themes.urls}" param="wpthemeurl" target="downloadtheme" />
+
+		<!-- unzip our collection of plugins -->
+		<unzip todir="${build.dir.wp}/wp-content/themes" >
+			<fileset dir="${build.dir.tmp.themes}">
+				<include name="*.zip"/>
+			</fileset>
+		</unzip>
+
+		<!-- clean up zip files -->
+		<delete>
+			<fileset dir="${build.dir.tmp.themes}">
+				<include name="*.zip"/>
+			</fileset>
+		</delete>
+
+	</target>
+
+<!-- Update the wp-config.php file
+---------------------------------------------------------------------------------  -->
 
 	<target name="updatewpconfig">
 
@@ -223,13 +273,10 @@
     </target>
 
     
-	<!-- Our main installer 
-	 * This will install the DB and WordPress
+	<!-- Our main installer * This will install the DB and WordPress
+------------------------------------------------------------------------------ -->
 
-	-->
 	<target name="install" depends="prepare">
-
-		<!-- if this is a standard wordpress.org build -->
 
 		<phingcall target="database" />
 
@@ -274,10 +321,8 @@
 	</target>
 
 
-	<!-- Our main installer 
-	 * This will install only WordPress (no database)
-
-	-->
+		<!-- WordPress only installer * This will install WordPress (not the DB)
+------------------------------------------------------------------------------ -->
 
 	<target name="install-wp" depends="prepare">
 
@@ -322,7 +367,9 @@
 	</target>
 
 
-    <!-- Display the available options -->
+    <!-- Display the available options 
+-------------------------------------------------------------------- -->
+
     <target name="help" description="Displays the available options">
 
         <echo msg="Build options" />

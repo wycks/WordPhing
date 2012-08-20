@@ -21,7 +21,8 @@ WordPress build and test system using Phing, this is beta
 
 - Put the 2 files where you want to build WordPress, most likely in your stack root folder
 - Open build.properties and fill it out
-- Type "phing install"
+- Type `"phing install"` to create database and wordpress
+- Type `"phing install-wp"` to create wordpress (will not create a database)
 
 **Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in these folder upon build without warning (will fix ).
 
