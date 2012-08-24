@@ -16,7 +16,7 @@
 
 	<!-- Create the database -->
 	<!-- Errors are handled by mySQL 
--------------------------------------------------------------------------- -->
+************************************************************** -->
 
 	<target name="database">
 	    <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
@@ -30,7 +30,7 @@
 	</target>
 
     <!-- Clean the build directory this does not have any error checking !
--------------------------------------------------------------------------- -->
+************************************************************** -->
 
     <target name="clean" description="Deletes previous WordPress install directory">
 
@@ -45,7 +45,7 @@
     </target>
 
     <!-- Prepare the build directory 
---------------------------------------------------------------------------- -->
+************************************************************** -->
 
     <target name="prepare" depends="clean" description="Creating new WordPress directory">
 
@@ -62,7 +62,7 @@
     </target>
     
     <!-- Download WordPress from .org 
------------------------------------------------------------------------------ -->
+************************************************************* -->
 	<target name="installwordpress" description="Download WordPress">
 
 		<!-- download our wordpress zip -->
@@ -87,7 +87,7 @@
     </target>
 
     <!-- Download WordPress Plugins 
---------------------------------------------------------------------------------- -->
+************************************************************* -->
 
 	<target name="downloadplugin" description="Download WordPress Plugin">
 
@@ -98,7 +98,7 @@
     
    
     <!-- Loop over properties list of wp plugins to install 
---------------------------------------------------------------------------------- -->
+************************************************************* -->
 	<target name="installplugins" description="Download Plugins" >
 
 		<!-- TODO - add a file of newline delimited plugin urls -->
@@ -123,7 +123,7 @@
 	</target>
 
 	<!-- Download WordPress Themes 
----------------------------------------------------------------------------------- -->
+************************************************************* -->
 	<target name="downloadtheme" description="Download WordPress Themes">
 
 		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
@@ -133,7 +133,7 @@
     
    
     <!-- Loop over properties list of wp themes to install 
----------------------------------------------------------------------------------  -->
+*************************************************************  -->
 	<target name="installthemes" description="Install themes" >
 
 		<!-- TODO - add a file of newline delimited plugin urls -->
@@ -158,7 +158,7 @@
 	</target>
 
 <!-- Update the wp-config.php file
----------------------------------------------------------------------------------  -->
+*************************************************************  -->
 
 	<target name="updatewpconfig">
 
@@ -220,20 +220,17 @@
 			</then>
 		</if>
 
-		<!-- enable SAVEQUERIES  debug  to wp-config.php file -->
+		<!-- enable SAVEQUERIES debug to wp-config.php file -->
+		<!-- this needs to be appended to the above to look cleaner -->
 		<if>
 			<isset property="build.wp.config.savequeries"/>
 			<then>
 
 				<echo msg="Setting SAVEQUERIES in wp-config.php" />
 
-				<reflexive file="${build.dir.wp}/wp-config.php">
-					<filterchain>
-						<replaceregexp>
-							<regexp pattern="(define\('SAVEQUERIES', )\w+(\);)" replace="\1true\2"/>
-						</replaceregexp>
-					</filterchain>
-				</reflexive>
+				
+				<append destFile="${build.dir.wp}/wp-config.php" text="${line.separator} define('SAVEQUERIES', ${build.wp.config.savequeries} ); ${line.separator}" />
+					
 
 			</then>
 		</if>		
@@ -292,7 +289,7 @@
 
     
 	<!-- Our main installer * This will install the DB and WordPress
------------------------------------------------------------------------------- -->
+************************************************************* -->
 
 	<target name="install" depends="prepare">
 
@@ -321,13 +318,25 @@
 			</then>
 		</if>
 
+			<!-- install additional wp thems -->
+		<if>
+			<isset property="build.download.themes.urls"/>
+			<then>
+
+				<phingcall target="installthemes" />
+
+				<echo msg="Installing themes" />
+
+			</then>
+		</if>
+
 		
-       <!--  Permissions - every system is different - customize this based on your environment.
-             this won't work on windows -->
-<!--
-        <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
-        <chmod file="${build.dir.wp}" mode="0755" verbose="true" />
--->    
+    <!--  Permissions - every system is different - customize this based on your environment.
+          this won't work on windows 
+    
+          <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
+          <chmod file="${build.dir.wp}" mode="0755" verbose="true" /> 
+    -->    
 
         <!-- just a timestamp in wp-config.php -->
         <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
@@ -340,7 +349,7 @@
 
 
 		<!-- WordPress only installer * This will install WordPress (not the DB)
------------------------------------------------------------------------------- -->
+*************************************************************- -->
 
 	<target name="install-wp" depends="prepare">
 
@@ -368,12 +377,12 @@
 		</if>
 
 		
-       <!--  Permissions - every system is different - customize this based on your environment.
-             this won't work on windows -->
-<!--
+    <!--  Permissions - every system is different - customize this based on your environment.
+          this won't work on windows 
+
         <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
         <chmod file="${build.dir.wp}" mode="0755" verbose="true" />
--->    
+    -->    
 
         <!-- just a timestamp in wp-config.php -->
         <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
@@ -386,7 +395,7 @@
 
 
     <!-- Display the available options 
--------------------------------------------------------------------- -->
+************************************************************* -->
 
     <target name="help" description="Displays the available options">
 
