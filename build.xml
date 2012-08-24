@@ -376,6 +376,17 @@
 			</then>
 		</if>
 
+		<!-- install additional wp thems -->
+		<if>
+			<isset property="build.download.themes.urls"/>
+			<then>
+
+				<phingcall target="installthemes" />
+
+				<echo msg="Installing themes" />
+
+			</then>
+		</if>
 		
     <!--  Permissions - every system is different - customize this based on your environment.
           this won't work on windows 
