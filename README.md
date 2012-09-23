@@ -1,21 +1,23 @@
 WordPhing
 =========
 
-WordPress build and test system using Phing, this is beta
+Beta of a WordPress build and test system using Phing.
 
-- Automated Installing/Moving/Testing/Scripting and PHP'ing WordPress from the command line
-- Currently works and builds WordPress in about 30 seconds depending on your Internet connection.
+- Automated Installing/Moving/Testing/Scripting and PHP'ing WordPress from the command line.
+- Currently works and builds WordPress in about 30 seconds depending on your Internet connection and how many plugins you include.
 
 
-*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc).*
+*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box (default PEAR folder in most PHP installs already includes it)*
 
 
 ## What does it do?
 
 - Creates a new database
 - Downloads and installs WordPress (latest stable)
-- Download and installs plugins
+- Download and installs plugins and themes
 - Appends needed info to your wp-config
+- Runs the WP install script
+
 
 ##Basic Instructions
 
@@ -28,26 +30,14 @@ WordPress build and test system using Phing, this is beta
 
 **Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in those folders upon build without warning (will fix ).
 
-
-##Notes
-
-The folder "Prompt" is another working version that adds "prompts" to the command line instead of using a config file.
-For example it will ask you for the name of the db you want to create, turn on debug, etc. I'm not keeping it up to date until the main WordPhing is done.
-
-Todo
-
-- Fix git & svn support
-- Add FTP support
-- Test Theme installs
-- Theme minify (yui-compress and google closure)
-- Moving, staging and backups (phing even has an amazon task)
-- Run some crazy tests (phpunit, phpmess)
-- Eliminate the WordPress setup script (title, admin login, email)
-- Interact directly with wp code
-
 ##Requires
 
 PHP 5.2 + & Phing
+
+HTTP_Request2 (usually included in your PEAR install)
+
+Phing and HTTP_Request are already included in most defualt php installs. If you need to install seperatly see below.
+
 
 ##Install
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
@@ -55,6 +45,22 @@ http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 It is recommended to have the latest version of Phing
 This script REQUIRES some optional libraries (http, git, svn, etc).
 Intall them all via `"install [--alldeps] phing/phing"`
+
+
+##Notes
+
+If there are problems during install you can run WordPhing in debug and verbose modes or both.
+
+For example: `"phing install -verbose -debug"`
+
+Todo
+
+- Fix the amdin login credentials to be configured via build.properties
+- Fix git & svn support
+- Add FTP support
+- Theme minify (yui-compress and google closure)
+- Moving, staging and backups (phing even has an amazon task)
+- Run some crazy tests (phpunit, phpmess)
 
 
 ##
