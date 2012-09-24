@@ -316,9 +316,9 @@ Sets wordpress login to admin:password
 
           
           $public = true;
-          $result = wp_install( 'title', 'admin', 'admin@example.com', $public, '', 'password' );
+          $result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
-          print("BarTask: $result");
+        
           }
           }
           
