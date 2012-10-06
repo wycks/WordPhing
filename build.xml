@@ -130,7 +130,7 @@
 		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
 		<httpget url="${wpthemeurl}" dir="${build.dir.tmp.themes}" />
 
-    </target>
+	</target>
     
    
     <!-- Loop over properties list of wp themes to install 
@@ -288,11 +288,11 @@
         
     </target>
 
-<!-- bypass the wordpress installer defines global ABSPATH to prevent erros and such.
-Sets wordpress login to admin:password
+
+<!-- Bypass the wordpress installer defines global ABSPATH to prevent erros and such.
+Sets wordpress login to admin:admin
 
 ###############################################  -->
-
 
 <target name="wpconfig">
 <foo/>
@@ -318,6 +318,12 @@ Sets wordpress login to admin:password
           $public = true;
           $result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
+
+          require('${build.dir.wp}/wp-includes/version.php');
+          //global $wp_current_db_version, $wp_db_version, $wpdb, $wp_version;
+
+         // $GLOBALS['wp_version'] = $set_version;
+          update_option( 'db_version', $wp_db_version );
         
           }
           }
@@ -335,7 +341,6 @@ Sets wordpress login to admin:password
 
 		<phingcall target="database" />
 
-		
 		<echo msg="Created a new database" />
 		
 		<phingcall target="installwordpress" />

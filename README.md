@@ -37,18 +37,9 @@ https://github.com/wp-cli/wp-cli
 
 PHP 5.2 + & Phing
 
-HTTP_Request2 (usually included in your PEAR install)
+HTTP_Request2
 
-Phing and HTTP_Request are already included in most defualt php installs. If you need to install seperatly see below.
-
-
-##Install
-http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
-
-It is recommended to have the latest version of Phing
-This script REQUIRES some optional libraries (http, git, svn, etc).
-Intall them all via `"install [--alldeps] phing/phing"`
-
+Phing and HTTP_Request2 are already included in most default PHP installs. If you need to install seperatly see "Install" below.
 
 ##Notes
 
@@ -64,6 +55,13 @@ For example: `"phing install -verbose -debug"`
 - Theme minify (yui-compress and google closure)
 - Moving, staging and backups (phing even has an amazon task)
 - Run some crazy tests (phpunit, phpmess)
+
+##Install
+http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
+
+It is recommended to have the latest version of Phing
+This script REQUIRES some optional libraries (http, git, svn, etc).
+Intall them all via `"install [--alldeps] phing/phing"`
 
 
 Thanks to: https://github.com/etivite/phing-wordpress-installer/ 
