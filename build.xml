@@ -302,31 +302,47 @@ Sets wordpress login to admin:admin
 <adhoc-task name="foo"><![CDATA[
 	class BarTask extends Task {
           
-          public function main() {
+        public function main() {
 
-          define( 'ABSPATH', '${build.dir.wp}' . '/');
-          
-          $base_dir = '${build.dir.wp}';
-          define('WP_SITEURL', '${build.dir.actual}');
-          define('WP_INSTALLING', true);
+	        define( 'ABSPATH', '${build.dir.wp}' . '/');
+	          
+	        $base_dir = '${build.dir.wp}';
+	        define('WP_SITEURL', '${build.dir.actual}');
+	        define('WP_INSTALLING', true);
 
-          require_once('${build.dir.wp}/wp-load.php');
-          require_once('${build.dir.wp}/wp-admin/includes/upgrade.php');
-          require_once('${build.dir.wp}/wp-includes/wp-db.php');
+	        require_once('${build.dir.wp}/wp-load.php');
+	        require_once('${build.dir.wp}/wp-admin/includes/upgrade.php');
+	        require_once('${build.dir.wp}/wp-includes/wp-db.php');
 
-          
-          $public = true;
-          $result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
+	          
+	        $public = true;
+	        $result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
+	        //we need to update the db version for some reason
+	          update_option( 'db_version', $wp_db_version );
 
-          require('${build.dir.wp}/wp-includes/version.php');
-          //global $wp_current_db_version, $wp_db_version, $wpdb, $wp_version;
+	        //remove Hello Dolly 
+	          delete_plugins(array('hello.php'));
 
-         // $GLOBALS['wp_version'] = $set_version;
-          update_option( 'db_version', $wp_db_version );
-        
-          }
-          }
+	        //remove default hello world post
+	          wp_delete_post(1,true);
+
+	        //remove default sample page
+	          wp_delete_post(2,true);
+
+	        //remove default Mr.Wordpress comment
+	          wp_delete_comment( 1, true ) ;
+
+	        //remove default links
+	          $arr_args = array( 'hide_invisible' => 0 );
+			  $arr_links = get_bookmarks( $arr_args );
+
+			  // Run through the list and delete 'em
+			  foreach($arr_links as $obj_link) {
+	   		     wp_delete_link($obj_link->link_id);
+	        }
+        }
+    }
           
 
           ]]>

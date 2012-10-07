@@ -1,16 +1,16 @@
 WordPhing
 =========
 
-Beta of a WordPress build and test system using Phing.
+WordPress build using Phing.
 
-- Automated Installing WordPress from the command line.
-- Currently builds WordPress in about 30 seconds depending on your Internet connection and how many plugins you include.
+- Automated Installing WordPress from the command line (install script).
+- Currently builds WordPress in under 30 seconds depending on your Internet connection and how many plugins you include.
 - Simple config file and command to run
 
 If you want something that has a lot more features please check out WP-CLI.
 https://github.com/wp-cli/wp-cli
 
-*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box (default PEAR folder in most PHP installs already includes it)*
+*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box (the default PEAR folder in most PHP installs already includes it)*
 
 
 ## What does it do?
@@ -20,6 +20,12 @@ https://github.com/wp-cli/wp-cli
 - Download and installs plugins and themes
 - Appends needed info to your wp-config
 - Runs the WP install script
+
+Some minor changes are made during install, they are;
+
+- Removes Hello Dolly plugin (sry Matt).
+- Removes default "Hello World" post, Sample Page, Links.
+- Removes default Mr.Wordpress comment.
 
 
 ##Basic Instructions
@@ -35,9 +41,7 @@ https://github.com/wp-cli/wp-cli
 
 ##Requires
 
-PHP 5.2 + & Phing
-
-HTTP_Request2
+PHP 5.2 + & Phing (with HTTP_Request2).
 
 Phing and HTTP_Request2 are already included in most default PHP installs. If you need to install seperatly see "Install" below.
 
@@ -47,14 +51,14 @@ If there are problems during install you can run WordPhing in debug and verbose 
 
 For example: `"phing install -verbose -debug"`
 
+
 ##Todo
 
-- Fix the lame database upgrade call because the db and version do not match, also the lame default example posts.
 - Fix git & svn support
 - Add FTP support
 - Theme minify (yui-compress and google closure)
 - Moving, staging and backups (phing even has an amazon task)
-- Run some crazy tests (phpunit, phpmess)
+- Run some tests (phpunit, phpmess)
 
 ##Install
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
