@@ -4,18 +4,20 @@ WordPhing
 WordPress build using Phing.
 
 - Automated Installing WordPress from the command line (install script).
-- Currently builds WordPress in under 30 seconds depending on your Internet connection and how many plugins you include.
+- Currently builds WordPress in about 30 seconds depending on your Internet connection and how many plugins/themes you include.
 - Simple config file and command to run
 
 If you want something that has a lot more features please check out WP-CLI.
 https://github.com/wp-cli/wp-cli
+
+Video: http://www.youtube.com/watch?feature=player_embedded&v=Y5eFQwgkgh4
 
 *Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box (the default PEAR folder in most PHP installs already includes it)*
 
 
 ## What does it do?
 
-- Creates a new database
+- Creates a new database (optional)
 - Downloads and installs WordPress (latest stable)
 - Download and installs plugins and themes
 - Appends needed info to your wp-config
@@ -60,7 +62,10 @@ For example: `"phing install -verbose -debug"`
 - Moving, staging and backups (phing even has an amazon task)
 - Run some tests (phpunit, phpmess)
 
-##Install
+##Install 
+
+- Seperate install if pear/phing is not included in your stack.
+
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 
 It is recommended to have the latest version of Phing
