@@ -12,8 +12,7 @@ https://github.com/wp-cli/wp-cli
 
 Video: http://www.youtube.com/watch?feature=player_embedded&v=Y5eFQwgkgh4
 
-*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box (the default PEAR folder in most PHP installs already includes it)*
-
+*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box.
 
 ## What does it do?
 
@@ -28,24 +27,31 @@ Some minor changes are made during install, they are;
 - Removes Hello Dolly plugin (sry Matt).
 - Removes default "Hello World" post, Sample Page, Links.
 - Removes default Mr.Wordpress comment.
+- Deletes readme.html and wp-sample-config.php
 
 
 ##Basic Instructions
 
-- Put the 2 files where you want to build WordPress, most likely in your stack root folder
-- Open build.properties and fill it out
+- Open build.properties and fill it out. All the detials are found it build.properties and must be filled out.
 
-2 Install options
-- Type `"phing install"`    Creates a database and WordPress
-- Type `"phing install-wp"` Creates just WordPress (will not create the database)
+2 Command options
+- Type `"phing wp-install"`      Creates a database and WordPress
+- Type `"phing wp-install-only"` Creates just WordPress (will not create the database)
+- Type `"phing wp-zip"`          Creates a zip
+- Type `"phing wp-gzip"`         Creates a gzip
+- Type `"phing wp-doc"`          Runs PHP Documentor 2
+- Type `"phing help"`            Command line options
 
-**Important** The `build.dir.wp` and `build.dir.tmp` in the build.properies will overwrite anything existing in those folders upon build without warning (will fix ).
+The build will not overwrite existing directories or existing databases.
+The file/dir permissions (chown)  are commented out by default to prevent issues on windows
 
 ##Requires
 
-PHP 5.2 + & Phing (with HTTP_Request2).
+PHP 5.2 + & Phing.
 
-Phing and HTTP_Request2 are already included in most default PHP installs. If you need to install seperatly see "Install" below.
+Phing is already included in most default PHP installs. If you need to install it separately see "Install" below.
+
+PHP Documentor 2 requires the latest Phing and XSL PHP extension. You can follow the instructions here if your install doesn not have it: http://www.phpdoc.org/
 
 ##Notes
 
@@ -56,7 +62,7 @@ For example: `"phing install -verbose -debug"`
 
 ##Todo
 
-- Fix git & svn support
+- Add git & svn support
 - Add FTP support
 - Theme minify (yui-compress and google closure)
 - Moving, staging and backups (phing even has an amazon task)
@@ -64,14 +70,16 @@ For example: `"phing install -verbose -debug"`
 
 ##Install 
 
+It is recommend you run `"pear upgrade phing/phing"` for the latest release.( required for PHP Documentor 2).
+
+This script will eventually REQUIRES some optional libraries (http, git, svn, etc), so you can run `"pear install --alldeps phing/phing"` to get them.
+
 - Seperate install if pear/phing is not included in your stack.
 
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 
-It is recommended to have the latest version of Phing
-This script REQUIRES some optional libraries (http, git, svn, etc).
-Intall them all via `"install [--alldeps] phing/phing"`
-
+- PEAR package
+http://pear.phing.info/
 
 Thanks to: https://github.com/etivite/phing-wordpress-installer/ 
 

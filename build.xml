@@ -13,6 +13,8 @@
 	<tstamp>
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
 		<format property="buildtime" pattern="%a, %d %b %Y, %H:%M"/>
+		<format property="filestamp" pattern="%d-%b-%Y-%H-%M"/>
+
 	</tstamp>
 
 	<!-- Create the database -->
@@ -30,27 +32,18 @@
 	    </pdosqlexec>        
 	</target>
 
-    <!-- Clean the build directory this does not have any error checking !
-************************************************************** -->
-
-    <target name="clean" description="Deletes previous WordPress install directory">
-
-        <echo msg="Cleaning build directory" />
-        
-        <!-- remove root location -->
-        <delete dir="${build.dir.wp}" includeemptydirs="true" failonerror="true" />
-        
-        <!-- remove temp location -->
-        <delete dir="${build.dir.tmp}" includeemptydirs="true" failonerror="true" />
-        
-    </target>
-
     <!-- Prepare the build directory 
 ************************************************************** -->
 
-    <target name="prepare" depends="clean" description="Creating new WordPress directory">
+   <!--  <target name="prepare" depends="clean" description="Creating new WordPress directory"> -->
+   <target name="prepare"  description="Creating new WordPress directory">
 
         <echo msg="Preparing build directory" />
+
+
+       <!--  build now will not overwrite existing directories -->
+        <available file="${build.dir.wp}" type="dir" property="dirfound" value="true"/>
+		<fail if="dirfound" message="This directory already exists!" />
         
         <!-- create our root location -->
         <mkdir dir="${build.dir.wp}" />
@@ -289,9 +282,7 @@
     </target>
 
 
-<!-- Bypass the wordpress installer defines global ABSPATH to prevent erros and such.
-Sets wordpress login to admin:admin
-
+<!-- Bypass the wordpress installer defines global ABSPATH/Version to prevent errors.
 ###############################################  -->
 
 <target name="wpconfig">
@@ -349,11 +340,57 @@ Sets wordpress login to admin:admin
 </adhoc-task>
 
 
+	<target name="delete-readme" description="Deletes readme and wp-config-sample">
+
+        <echo msg="deleting readme.html and wp-config-sample.php" />
+        
+        <delete file="${build.dir.wp}/readme.html" />
+        <delete file="${build.dir.wp}/wp-config-sample.php" />
+        
+	</target>
+
+<!-- Tarballs  
+*************************************************************  -->
+
+    <!-- zip -->
+	<target name="zip-it">
+
+		<!-- zip it -->
+		<zip destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.zip" basedir="${build.wp.tarball.send}"/>
+	</target>
+
+	<!-- tar gzip -->
+
+	<target name="gzip-it">
+
+		<!-- gzip it, can change compression to bzip2, check phing docs-->
+		<tar destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.tar.gz" compression="gzip" basedir="${build.wp.tarball.send}"/>
+	</target>
+
+
+<!-- PHP Documentor 2 
+# http://www.phpdoc.org/
+*************************************************************  -->
+<target name="doc-it">
+
+	<!-- dir to hold the doc files, set to .php by default -->
+	<mkdir dir="${build.wp.doc.output}" />
+
+	<phpdoc2 title="Code Documentation"
+	  destdir="${build.wp.doc.output}"
+	  template="responsive">
+	   <fileset dir="${build.wp.docs.dir}">
+	      <include name="**/*.php" />
+	   </fileset>
+	</phpdoc2>
+
+</target>
+
 
 	<!-- Our main installer * This will install the DB and WordPress
 ************************************************************* -->
 
-	<target name="install" depends="prepare">
+	<target name="wp-install" depends="prepare">
 
 		<phingcall target="database" />
 
@@ -409,6 +446,8 @@ Sets wordpress login to admin:admin
 
         <phingcall target="cleantmp" />
 
+        <phingcall target="delete-readme" />
+
        <echo msg="All done" />
 
 	</target>
@@ -417,7 +456,7 @@ Sets wordpress login to admin:admin
 		<!-- WordPress only installer * This will install WordPress (not the DB)
 *************************************************************- -->
 
-	<target name="install-wp" depends="prepare">
+	<target name="wp-install-only" depends="prepare">
 
 		<!-- if this is a standard wordpress.org build -->
 
@@ -442,7 +481,7 @@ Sets wordpress login to admin:admin
 			</then>
 		</if>
 
-		<!-- install additional wp thems -->
+			<!-- install additional wp thems -->
 		<if>
 			<isset property="build.download.themes.urls"/>
 			<then>
@@ -453,18 +492,17 @@ Sets wordpress login to admin:admin
 
 			</then>
 		</if>
+
 		
     <!--  Permissions - every system is different - customize this based on your environment.
           this won't work on windows 
-
-        <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
-        <chmod file="${build.dir.wp}" mode="0755" verbose="true" />
+    
+          <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
+          <chmod file="${build.dir.wp}" mode="0755" verbose="true" /> 
     -->    
 
         <!-- just a timestamp in wp-config.php -->
         <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
-
-        <phingcall target="cleantmp" />
 
         <phingcall target="wpconfig" />
 
@@ -472,12 +510,27 @@ Sets wordpress login to admin:admin
 
         <phingcall target="cleantmp" />
 
-        <echo msg="All done" />
+       <echo msg="All done" />
 
 	</target>
 
 
+		<!-- Tarbal calls
+*************************************************************- -->
+    <target name="wp-zip">
+		<phingcall target="zip-it" />
+	</target>
 
+ <target name="wp-gzip">
+		<phingcall target="gzip-it" />
+	</target>
+
+
+		<!-- PHP Documentor 2
+*************************************************************- -->
+    <target name="wp-doc">
+		<phingcall target="doc-it" />
+	</target>
 
 
     <!-- Display the available options 
@@ -486,11 +539,14 @@ Sets wordpress login to admin:admin
     <target name="help" description="Displays the available options">
 
         <echo msg="Build options" />
+        <echo msg="Please read the build.properties for more details />
         <echo msg="------------------" />
         
-        <echo msg="$ phing install - Creates a new database, downloads and installs WordPress and Plugins" />
-        <echo msg="$ phing install-wp - Downloads and installs WordPress and Plugins" />
-        <echo msg="$ phing help - Displays the available options" />
+        <echo msg="$ phing wp-install - Creates a new database, downloads and installs WordPress, Plugins and Themes" />
+        <echo msg="$ phing wp-install-only - Downloads and installs WordPress, Plugins, Themes (no database setup)" />
+        <echo msg="$ phing wp-zip - creates a zip" />
+        <echo msg="$ phing wp-gzip - creates a gzip" />
+        <echo msg="$ phing wp-doc - runs PHP Documentor 2" />
 
         
     </target>
