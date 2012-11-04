@@ -33,7 +33,7 @@ Some minor changes are made during install, they are;
 
 Other: 
 
-- Zips or gzips directory (the whole thing or just your theme/plugin)
+- Zips or Gzips directory (the whole thing or just your theme/plugin)
 - Run PHP Documentor 2
 
 
@@ -42,12 +42,15 @@ Other:
 Open build.properties and fill it out, it must be filled out and also read the comments:)
 
 Command options
-- Type `"phing wp-install"`      Creates a database and WordPress
-- Type `"phing wp-install-only"` Creates just WordPress (will not create the database)
-- Type `"phing wp-zip"`          Creates a zip
-- Type `"phing wp-gzip"`         Creates a gzip
-- Type `"phing wp-doc"`          Runs PHP Documentor 2
-- Type `"phing help"`            Command line options
+- `"phing wp-install"`      Creates a database and WordPress
+- `"phing wp-install-only"` Creates just WordPress (will not create the database)
+- `"phing wp-zip"`          Creates a zip
+- `"phing wp-gzip"`         Creates a gzip
+- `"phing wp-doc"`          Runs PHP Documentor 2
+- `"phing wp-min-js"`       Minify JS
+- `"phing help"`            Command line options
+
+Commands are chainable , for example `"phing wp-install wp-gzip"` 
 
 The build will not overwrite existing directories or existing databases.  
 The file/dir permissions (chown)  are commented out by default to prevent issues on windows
@@ -58,7 +61,7 @@ PHP 5.2 + & Phing.
 
 Phing is already included in most default PHP installs. If you need to install it separately see "Install" below.
 
-PHP Documentor 2 requires the latest Phing and XSL PHP extension. You can follow the instructions here if your install does not have it: http://www.phpdoc.org/
+PHP Documentor 2 requires the latest  Phing and the XSL PHP extension. You should also us the latest build found here: http://www.phpdoc.org/
 
 ##Notes
 

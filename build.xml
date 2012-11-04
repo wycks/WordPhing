@@ -387,6 +387,19 @@
 </target>
 
 
+<!-- jsMin
+#  https://github.com/rgrove/jsmin-php/
+*************************************************************  -->
+
+<target name="min-it">
+	<jsMin targetDir="${build.wp.jsm.output}" failOnError="false">
+	  <fileset dir="${build.wp.jsmin.dir}">
+	    <include name="**/*.js"/>
+	  </fileset>
+	</jsMin>
+</target>
+
+
 	<!-- Our main installer * This will install the DB and WordPress
 ************************************************************* -->
 
@@ -515,7 +528,7 @@
 	</target>
 
 
-		<!-- Tarbal calls
+		<!-- Tarball calls
 *************************************************************- -->
     <target name="wp-zip">
 		<phingcall target="zip-it" />
@@ -532,6 +545,13 @@
 		<phingcall target="doc-it" />
 	</target>
 
+		<!-- JsMin
+*************************************************************- -->
+    <target name="wp-min-js">
+		<phingcall target="min-it" />
+	</target>
+
+
 
     <!-- Display the available options 
 ************************************************************* -->
@@ -539,14 +559,14 @@
     <target name="help" description="Displays the available options">
 
         <echo msg="Build options" />
-        <echo msg="Please read the build.properties for more details />
+        <echo msg="Please read the build.properties for more details" />
         <echo msg="------------------" />
         
         <echo msg="$ phing wp-install - Creates a new database, downloads and installs WordPress, Plugins and Themes" />
         <echo msg="$ phing wp-install-only - Downloads and installs WordPress, Plugins, Themes (no database setup)" />
-        <echo msg="$ phing wp-zip - creates a zip" />
-        <echo msg="$ phing wp-gzip - creates a gzip" />
-        <echo msg="$ phing wp-doc - runs PHP Documentor 2" />
+        <echo msg="$ phing wp-zip - creates a zip "/>
+        <echo msg="$ phing wp-gzip - creates a gzip "/>
+        <echo msg="$ phing wp-doc - runs PHP Documentor 2"/>
 
         
     </target>
