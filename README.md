@@ -50,7 +50,6 @@ Command options
 - `"phing wp-doc"`          Runs PHP Documentor 2
 - `"phing wp-min-js"`       Minify JS
 - `"phing wp-ftp"`          FTP upload
-- 
 - `"phing help"`            Command line options
 
 Commands are chainable , for example `"phing wp-install wp-gzip"`   
@@ -65,7 +64,7 @@ PHP 5.2 + & Phing.
 Phing is already included in most default PHP installs. If you need to install it separately see "Install" below.
 
  - PHP Documentor 2 requires the latest  Phing and the XSL PHP extension. You should also us the latest build found here: http://www.phpdoc.org/
-  - FTP requires Net_FTP http://pear.php.net/package/Net_FTP/redirected
+ - FTP requires Net_FTP http://pear.php.net/package/Net_FTP/redirected
 
 ##Notes
 
