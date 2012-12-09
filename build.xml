@@ -376,7 +376,7 @@
 	<!-- dir to hold the doc files, set to .php by default -->
 	<mkdir dir="${build.wp.doc.output}" />
 
-	<phpdoc2 title="Code Documentation"
+	<phpdoc2 title="${build.wp.docs.name}"
 	  destdir="${build.wp.doc.output}"
 	  template="responsive">
 	   <fileset dir="${build.wp.docs.dir}">
@@ -551,6 +551,22 @@
 		<phingcall target="min-it" />
 	</target>
 
+
+		<!-- FTP
+*************************************************************- -->
+
+<target name="wp-ftp">
+    <echo>Uploading files to FTP</echo>
+    <ftpdeploy 
+        host="${ftp.host}"
+        port="${ftp.port}"
+        username="${ftp.username}"
+        password="${ftp.password}"
+        dir="${ftp.dir}">
+      <fileset dir="${ftp.source}"></fileset>
+    </ftpdeploy>
+    <echo>FTP Upload Finished!</echo>
+</target>
 
 
     <!-- Display the available options 

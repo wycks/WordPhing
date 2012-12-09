@@ -10,7 +10,6 @@ WordPress build and other stuff using Phing.
 If you want something that has a lot more features please check out WP-CLI.
 https://github.com/wp-cli/wp-cli
 
-Video: http://www.youtube.com/watch?feature=player_embedded&v=Y5eFQwgkgh4
 
 *Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box.
 
@@ -35,11 +34,13 @@ Other:
 
 - Zips or Gzips directory (the whole thing or just your theme/plugin)
 - Run PHP Documentor 2
+- FTP
+- Minify js
 
 
 ##Basic Instructions
 
-Open build.properties and fill it out, it must be filled out and also read the comments:)
+Open build.properties and fill it out and also read the comments:)
 
 Command options
 - `"phing wp-install"`      Creates a database and WordPress
@@ -48,9 +49,11 @@ Command options
 - `"phing wp-gzip"`         Creates a gzip
 - `"phing wp-doc"`          Runs PHP Documentor 2
 - `"phing wp-min-js"`       Minify JS
+- `"phing wp-ftp"`          FTP upload
+- 
 - `"phing help"`            Command line options
 
-Commands are chainable , for example `"phing wp-install wp-gzip"` 
+Commands are chainable , for example `"phing wp-install wp-gzip"`   
 
 The build will not overwrite existing directories or existing databases.  
 The file/dir permissions (chown)  are commented out by default to prevent issues on windows
@@ -61,7 +64,8 @@ PHP 5.2 + & Phing.
 
 Phing is already included in most default PHP installs. If you need to install it separately see "Install" below.
 
-PHP Documentor 2 requires the latest  Phing and the XSL PHP extension. You should also us the latest build found here: http://www.phpdoc.org/
+ - PHP Documentor 2 requires the latest  Phing and the XSL PHP extension. You should also us the latest build found here: http://www.phpdoc.org/
+  - FTP requires Net_FTP http://pear.php.net/package/Net_FTP/redirected
 
 ##Notes
 
@@ -73,8 +77,8 @@ For example: `"phing install -verbose -debug"`
 ##Todo
 
 - Add git & svn support
-- Add FTP support
-- Theme minify (yui-compress and google closure)
+- Add Rsync support
+- CSS minify (yui-compress and google closure) requires java
 - Moving, staging and backups (phing even has an amazon task)
 - Run some tests (phpunit, phpmess)
 
@@ -96,8 +100,3 @@ Thanks to: https://github.com/etivite/phing-wordpress-installer/
 
 Why Phing? Because it's built with PHP.
 https://github.com/phingofficial/phing
-
-
-
-
-
