@@ -289,11 +289,10 @@
 <foo/>
 </target>
 
-		
 <adhoc-task name="foo"><![CDATA[
 	class BarTask extends Task {
           
-        public function main() {
+        function main() {
 
 	        define( 'ABSPATH', '${build.dir.wp}' . '/');
 	          
@@ -312,42 +311,54 @@
 	        //we need to update the db version for some reason
 	          update_option( 'db_version', $wp_db_version );
 
-	        //remove Hello Dolly 
-	          delete_plugins(array('hello.php'));
+	        //edit this script, do not edit this class directly
+	        require('boot.php');
 
-	        //remove default hello world post
-	          wp_delete_post(1,true);
 
-	        //remove default sample page
-	          wp_delete_post(2,true);
-
-	        //remove default Mr.Wordpress comment
-	          wp_delete_comment( 1, true ) ;
-
-	        //remove default links
-	          $arr_args = array( 'hide_invisible' => 0 );
-			  $arr_links = get_bookmarks( $arr_args );
-
-			  // Run through the list and delete 'em
-			  foreach($arr_links as $obj_link) {
-	   		     wp_delete_link($obj_link->link_id);
-	        }
         }
     }
-          
-
-          ]]>
+    
+]]>
 </adhoc-task>
 
 
-	<target name="delete-readme" description="Deletes readme and wp-config-sample">
-
+<!-- Delete readme -->
+<target name="delete-readme" description="Deletes readme and wp-config-sample">
         <echo msg="deleting readme.html and wp-config-sample.php" />
-        
         <delete file="${build.dir.wp}/readme.html" />
         <delete file="${build.dir.wp}/wp-config-sample.php" />
-        
-	</target>
+</target>
+
+
+<!-- Custom run script
+*    
+*    Run any PHP on the current install
+*    uses run.php
+* 
+*************************************************************  -->
+
+<target name="wp-run">
+<boo/> 
+</target>
+
+<adhoc-task name="boo"><![CDATA[
+	class BooTask extends Task {
+          
+        function main() {
+
+        	//this is crazy, blame wordpress
+        	global $domain, $path, $base, $admin_page_hooks, $ajax_results, $all_links, $allowedposttags, $allowedtags, $authordata, $bgcolor, $cache_categories, $cache_lastcommentmodified, $cache_lastpostdate, $cache_lastpostmodified, $cache_userdata, $category_cache, $class, $comment, $comment_cache, $comment_count_cache, $commentdata, $current_user, $day, $debug, $descriptions, $error, $feeds, $id, $is_apache, $is_IIS, $is_macIE, $is_winIE, $l10n, $locale, $link, $m, $map, $max_num_pages, $menu, $mode, $month, $month_abbrev, $monthnum, $more, $multipage, $names, $newday, $numpages, $page, $page_cache, $paged, $pagenow, $pages, $parent_file, $preview, $previousday, $previousweekday, $plugin_page, $post, $post_cache, $post_default_category, $post_default_title, $post_meta_cache, $postc, $postdata, $posts, $posts_per_page, $previousday, $request, $result, $richedit, $single, $submenu, $table_prefix, $targets, $timedifference, $timestart, $timeend, $updated_timestamp, $urls, $user_ID, $user_email, $user_identity, $user_level, $user_login, $user_pass_md5, $user_url, $weekday, $weekday_abbrev, $weekday_initial, $withcomments, $wp, $wp_broken_themes, $wp_db_version, $wp_did_header, $wp_did_template_redirect, $wp_file_description, $wp_filter, $wp_importers, $wp_plugins, $wp_taxonomies, $wp_the_query, $wp_themes, $wp_object_cache, $wp_query, $wp_queries, $wp_rewrite, $wp_roles, $wp_similiesreplace, $wp_smiliessearch, $wp_version, $wpcommentspopupfile, $wpcommentsjavascript, $wpdb;
+
+
+	        define('WP_USE_THEMES', false);
+	        require('${build.dir.wp}/wp-blog-header.php');
+
+	        // edit this script, do not edit this class directly
+	        require('run.php');
+	    }
+    }
+]]>
+</adhoc-task>
 
 <!-- Tarballs  
 *************************************************************  -->
@@ -568,6 +579,11 @@
     <echo>FTP Upload Finished!</echo>
 </target>
 
+		<!-- script run
+*************************************************************- -->
+  <target name="wprun">
+		<phingcall target="wprun" />
+	</target>
 
     <!-- Display the available options 
 ************************************************************* -->
