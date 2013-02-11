@@ -12,8 +12,8 @@
 
 	<tstamp>
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
-		<format property="buildtime" pattern="%a, %d %b %Y, %H:%M"/>
-		<format property="filestamp" pattern="%d-%b-%Y-%H-%M"/>
+		<format property="buildtime" pattern="${build.dt.buildformat}"/>
+		<format property="filestamp" pattern="${build.dt.fileformat}"/>
 
 	</tstamp>
 
@@ -31,6 +31,17 @@
 	        CREATE DATABASE ${build.db.name};
 	    </pdosqlexec>        
 	</target>
+
+  <target name="clean-database">
+      <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
+      <pdosqlexec url="${build.db.url}"
+                  userid="${build.db.userid}"
+                  password="${build.db.password}"
+                  onerror="abort"
+                  autocommit="true">
+          DROP DATABASE ${build.db.name};
+      </pdosqlexec>
+  </target>
 
     <!-- Prepare the build directory 
 ************************************************************** -->
@@ -536,6 +547,11 @@
 
        <echo msg="All done" />
 
+	</target>
+
+  <target name="wp-clean">
+    <phingcall target="clean-database" />
+    <delete dir="${build.dir.wp}" includeemptydirs="true" />
 	</target>
 
 
