@@ -12,8 +12,8 @@
 
 	<tstamp>
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
-		<format property="buildtime" pattern="%a, %d %b %Y, %H:%M"/>
-		<format property="filestamp" pattern="%d-%b-%Y-%H-%M"/>
+		<format property="buildtime" pattern="${build.dt.buildformat}"/>
+		<format property="filestamp" pattern="${build.dt.fileformat}"/>
 
 	</tstamp>
 
