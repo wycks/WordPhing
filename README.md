@@ -46,10 +46,11 @@ Open build.properties and fill it out and also read the comments:)
 Command options
 - `"phing wp-install"`      Creates a database and WordPress
 - `"phing wp-install-only"` Creates just WordPress (will not create the database)
+- `"phing wp-ftp"`          FTP upload
+- `"phing wp-clean-all"`    Deletes directory and database (can run separately via `clean-files` or `clean-database`).
 - `"phing wp-run"`          Runs custom script
 - `"phing wp-doc"`          Runs PHP Documentor 2
 - `"phing wp-min-js"`       Minify JS
-- `"phing wp-ftp"`          FTP upload
 - `"phing wp-zip"`          Creates a zip
 - `"phing wp-gzip"`         Creates a gzip
 - `"phing help"`            Command line options
@@ -60,14 +61,16 @@ Commands are chainable , for example `"phing wp-install wp-gzip"`
 
 ##Advanced Instructions
 
-WordPhing now contains 2 extra files to run normal PHP and WOrdPress code, have a look at them for examples.
+WordPhing now contains 2 extra files to run normal PHP and WordPress code, have a look at them for examples.
+
  `boot.php` can be run during the install process to customize installation (creation or removing default content).
+
  `run.php` can be run via the `phing wp-run` command on an existing WordPress install
 
- Both files are run from the WordPhing build file root and not the WordPress install root and require build.properties to be properly filled out. You can change the location to to run from the WordPress root in build.xml. 
+ Both files are run from the WordPhing build file root and not the WordPress install root and require `build.properties` to be properly filled out. You can change the location to to run from the WordPress root in `build.xml`. 
 
 
-The file/dir permissions (chown)  are commented out by default to prevent issues on Windows ( see line 457 in build.xml for reference).
+The file/dir permissions (`chown`)  are commented out by default to prevent issues on Windows ( see line 457 in build.xml for reference).
 
 ##Requires
 
@@ -80,13 +83,14 @@ PHP 5.2 + & Phing.
 
 If there are problems during install you can run WordPhing in debug and verbose modes or both.
 
-For example: `"phing install -verbose -debug"`
+For example: `"phing wp-install -verbose -debug"`
 
 If you want something that has a lot more features please check out WP-CLI.
 https://github.com/wp-cli/wp-cli
 
 ##Todo
 
+- Database dump
 - Add git & svn support
 - Add Rsync support
 - Add Amazon support

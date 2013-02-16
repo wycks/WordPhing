@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Build a WordPress Install" default="help" basedir="./">
+<!-- set basedir="./" here  if you need to -->
+<project name="Build a WordPress Install" default="help" >
+
 
     <!-- Load the configuration file -->
     <property file="build.properties" />
@@ -14,10 +16,9 @@
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
 		<format property="buildtime" pattern="${build.dt.buildformat}"/>
 		<format property="filestamp" pattern="${build.dt.fileformat}"/>
+    </tstamp>
 
-	</tstamp>
-
-	<!-- Create the database -->
+	<!-- Create & Clean the database -->
 	<!-- Errors are handled by mySQL 
 ************************************************************** -->
 
@@ -32,22 +33,22 @@
 	    </pdosqlexec>        
 	</target>
 
-  <target name="clean-database">
-      <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
-      <pdosqlexec url="${build.db.url}"
+    <target name="clean-database">
+        <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
+        <pdosqlexec url="${build.db.url}"
                   userid="${build.db.userid}"
                   password="${build.db.password}"
                   onerror="abort"
                   autocommit="true">
-          DROP DATABASE ${build.db.name};
-      </pdosqlexec>
-  </target>
+            DROP DATABASE ${build.db.name};
+        </pdosqlexec>
+    </target>
 
     <!-- Prepare the build directory 
 ************************************************************** -->
 
    <!--  <target name="prepare" depends="clean" description="Creating new WordPress directory"> -->
-   <target name="prepare"  description="Creating new WordPress directory">
+    <target name="prepare"  description="Creating new WordPress directory">
 
         <echo msg="Preparing build directory" />
 
@@ -65,6 +66,17 @@
         <mkdir dir="${build.dir.tmp.themes}" />
         
     </target>
+
+
+    <!-- Clean the build directory
+************************************************************** -->
+    <target name="clean-files"  description="Cleaning the WordPress directory">
+
+    <delete dir="${build.dir.wp}" />
+    <echo msg="${build.dir.wp}" />    
+
+  	</target>
+
     
     <!-- Download WordPress from .org 
 ************************************************************* -->
@@ -393,7 +405,7 @@
 <!-- PHP Documentor 2 
 # http://www.phpdoc.org/
 *************************************************************  -->
-<target name="doc-it">
+<target name="doc-it" description="Runs PHP Documentor 2 on your project and outputs results in new folder">
 
 	<!-- dir to hold the doc files, set to .php by default -->
 	<mkdir dir="${build.wp.doc.output}" />
@@ -408,6 +420,37 @@
 
 </target>
 
+<!-- PhpCodeSniffer
+# http://pear.php.net/package/PHP_CodeSniffer
+see
+https://github.com/mrchrisadams/WordPress-Coding-Standards
+*************************************************************  -->
+<target name="sniff-it"  description="Verify compliance with project code standard" />
+
+	<!-- dir to hold the doc files, set to .php by default -->
+	<mkdir dir="${build.wp.sniff.output}" />
+
+	<phpcodesniffer
+				
+                haltonerror="true"
+                standard="PEAR"
+                verbosity="1"
+               >
+            <formatter
+                    outfile="${build.wp.sniff.output}/Codesniffer.txt"
+                    type="full"
+                    />
+            <fileset
+                    dir="${build.dir.wp}\wp-content\themes\twentyeleven"
+                    >
+                <include name="*.php" />
+            </fileset>
+    </phpcodesniffer>
+		</phpcodesniffer>
+
+	
+
+</target>
 
 <!-- jsMin
 #  https://github.com/rgrove/jsmin-php/
@@ -452,7 +495,7 @@
 			</then>
 		</if>
 
-			<!-- install additional wp thems -->
+			<!-- install additional wp themes -->
 		<if>
 			<isset property="build.download.themes.urls"/>
 			<then>
@@ -549,9 +592,20 @@
 
 	</target>
 
-  <target name="wp-clean">
-    <phingcall target="clean-database" />
-    <delete dir="${build.dir.wp}" includeemptydirs="true" />
+    <target name="wp-clean">
+	    <phingcall target="clean-database" />
+	    <delete dir="${build.dir.wp}" includeemptydirs="true" />
+	</target>
+
+
+		<!-- Clean  files and DB (delete)
+*************************************************************- -->
+	<target name="wp-clean-all">
+		<phingcall target="clean-files" />
+		<echo msg="Removed Files in ${build.dir.wp}" />
+
+		<phingcall target="clean-database" />
+		<echo msg="Removed database ${build.db.name}" />
 	</target>
 
 
@@ -561,7 +615,7 @@
 		<phingcall target="zip-it" />
 	</target>
 
- <target name="wp-gzip">
+    <target name="wp-gzip">
 		<phingcall target="gzip-it" />
 	</target>
 
@@ -582,22 +636,22 @@
 		<!-- FTP
 *************************************************************- -->
 
-<target name="wp-ftp">
-    <echo>Uploading files to FTP</echo>
-    <ftpdeploy 
-        host="${ftp.host}"
-        port="${ftp.port}"
-        username="${ftp.username}"
-        password="${ftp.password}"
-        dir="${ftp.dir}">
-      <fileset dir="${ftp.source}"></fileset>
-    </ftpdeploy>
-    <echo>FTP Upload Finished!</echo>
-</target>
+	<target name="wp-ftp">
+	    <echo>Uploading files to FTP</echo>
+	    <ftpdeploy 
+	        host="${ftp.host}"
+	        port="${ftp.port}"
+	        username="${ftp.username}"
+	        password="${ftp.password}"
+	        dir="${ftp.dir}">
+	      <fileset dir="${ftp.source}"></fileset>
+	    </ftpdeploy>
+	    <echo>FTP Upload Finished!</echo>
+	</target>
 
 		<!-- script run
 *************************************************************- -->
-  <target name="wprun">
+  	<target name="wprun">
 		<phingcall target="wprun" />
 	</target>
 
@@ -606,15 +660,29 @@
 
     <target name="help" description="Displays the available options">
 
+    	<echo msg="/ / /\ \ \  ___   _ __   __| |  / _ \| |__  (_) _ __    __ _ "  />
+    	<echo msg="\ \/  \/ / / _ \ | '__| / _` | / /_)/| '_ \ | || '_ \  / _` |"  />
+    	<echo msg="	\  /\  / | (_) || |   | (_| |/ ___/ | | | || || | | || (_| |"  />
+    	<echo msg="  \/  \/   \___/ |_|    \__,_|\/     |_| |_||_||_| |_| \__, |"  />
+    	<echo msg="                                                       |___/ "  />
+    	<echo msg="|| https://github.com/wycks/WordPhing || WordPhing is licensed under the MIT License ||" />
+
+    	<echo msg="------------------" />
         <echo msg="Build options" />
         <echo msg="Please read the build.properties for more details" />
         <echo msg="------------------" />
         
-        <echo msg="$ phing wp-install - Creates a new database, downloads and installs WordPress, Plugins and Themes" />
-        <echo msg="$ phing wp-install-only - Downloads and installs WordPress, Plugins, Themes (no database setup)" />
-        <echo msg="$ phing wp-zip - creates a zip "/>
-        <echo msg="$ phing wp-gzip - creates a gzip "/>
-        <echo msg="$ phing wp-doc - runs PHP Documentor 2"/>
+        <echo msg="$ phing wp-install        Creates a new database, downloads and installs WordPress, Plugins and Themes" />
+        <echo msg="$ phing wp-install-only   Downloads and installs WordPress, Plugins, Themes - no database setup" />
+
+        <echo msg="$ phing wp-ftp            FTP upload "/>
+        <echo msg="$ phing wp-run            Runs custom script run.php" />
+        <echo msg="$ phing wp-clean-all      Deletes directory and database, can run separately via clean-files or clean-database." />
+
+        <echo msg="$ phing wp-min-js         Minify JavaScript "/>
+		<echo msg="$ phing wp-doc            PHP Documentor 2"/>
+        <echo msg="$ phing wp-zip            Creates a zip "/>
+        <echo msg="$ phing wp-gzip           Creates a gzip "/>
 
         
     </target>
