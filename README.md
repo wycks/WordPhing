@@ -29,14 +29,11 @@ WordPress build script using [Phing](http://www.phing.info/).
 
 **Build Automation:**
 
-- Run PHP Documentor 2
+- PHP Documentor 2
 - FTP
 - Minify js
 - Zips or Gzips 
-
-Other: 
-
-- Deletes readme.html and wp-sample-config.php
+- PHP CodeSniffer (experimental, currently uses PEAR)
 
 
 ##Basic Instructions
@@ -57,13 +54,12 @@ Command options
 
 Commands are chainable , for example `"phing wp-install wp-gzip"`   
 
-*The build will not overwrite existing directories or existing databases.*  
-
+ 
 ##Advanced Instructions
 
 WordPhing now contains 2 extra files to run normal PHP and WordPress code, have a look at them for examples.
 
- `boot.php` can be run during the install process to customize installation (creation or removing default content).
+ `boot.php` can be run during the install process to customize installation.
 
  `run.php` can be run via the `phing wp-run` command on an existing WordPress install
 
@@ -72,6 +68,16 @@ WordPhing now contains 2 extra files to run normal PHP and WordPress code, have 
 
 The file/dir permissions (`chown`)  are commented out by default to prevent issues on Windows ( see line 457 in build.xml for reference).
 
+##Notes
+
+If there are problems during install you can run WordPhing in debug and verbose modes or both.
+For example: `"phing wp-install -verbose -debug"`
+
+The install build will not overwrite existing directories or existing databases. It will also Delete the readme.html and wp-sample-config.php
+
+If you want something that has a more command-line features please check out WP-CLI.
+https://github.com/wp-cli/wp-cli
+
 ##Requires
 
 PHP 5.2 + & Phing.
@@ -79,28 +85,21 @@ PHP 5.2 + & Phing.
  - PHP Documentor 2 requires the latest Phing and the XSL PHP extension. You should use the latest build found here: http://www.phpdoc.org/
  - FTP requires Net_FTP http://pear.php.net/package/Net_FTP/redirected
 
-##Notes
-
-If there are problems during install you can run WordPhing in debug and verbose modes or both.
-
-For example: `"phing wp-install -verbose -debug"`
-
-If you want something that has a lot more features please check out WP-CLI.
-https://github.com/wp-cli/wp-cli
 
 ##Todo
 
-- Database dump
-- Add git & svn support
-- Add Rsync support
-- Add Amazon support
-- CSS minify (yui-compress and google closure) requires java
-- Moving, staging and backups (phing even has an amazon task)
-- Run some tests (phpunit, phpmess)
+- Database dump + whole site migration
+- Maybe Add git & svn support
+- Fix PhpCodeSniffer to use WordPress standards
+- PHPMD (mess detector)
+- Add backups via Rsync and Amazon
+- CSS minify (yui-compress) requires java :( switch js to yui as well since php one is depreciated.
+- Staging and continuous integration?
+
 
 ##Install 
 
-It is recommend you run `"pear upgrade phing/phing"` for the latest release.( required for PHP Documentor 2).
+It is recommend you run `"pear upgrade phing/phing"` for the latest release ( required for PHP Documentor 2).
 
 This script will eventually require some optional libraries (http, git, svn, amazon, etc), so you can run `"pear install --alldeps phing/phing"` to get them.
 

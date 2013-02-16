@@ -72,8 +72,8 @@
 ************************************************************** -->
     <target name="clean-files"  description="Cleaning the WordPress directory">
 
-    <delete dir="${build.dir.wp}" />
-    <echo msg="${build.dir.wp}" />    
+	    <delete dir="${build.dir.wp}" />
+	    <echo msg="${build.dir.wp}" />    
 
   	</target>
 
@@ -422,33 +422,34 @@
 
 <!-- PhpCodeSniffer
 # http://pear.php.net/package/PHP_CodeSniffer
-see
-https://github.com/mrchrisadams/WordPress-Coding-Standards
+see https://github.com/mrchrisadams/WordPress-Coding-Standards
 *************************************************************  -->
-<target name="sniff-it"  description="Verify compliance with project code standard" />
+
+<target name="sniff-it" description="Verify compliance with project code standard">
 
 	<!-- dir to hold the doc files, set to .php by default -->
 	<mkdir dir="${build.wp.sniff.output}" />
 
-	<phpcodesniffer
-				
-                haltonerror="true"
-                standard="PEAR"
-                verbosity="1"
-               >
-            <formatter
-                    outfile="${build.wp.sniff.output}/Codesniffer.txt"
-                    type="full"
-                    />
-            <fileset
-                    dir="${build.dir.wp}\wp-content\themes\twentyeleven"
-                    >
+	<phpcodesniffer haltonerror="false" standard="PEAR" verbosity="1">
+        <formatter outfile="${build.wp.sniff.output}/Codesniffer.txt" type="full" />
+            <fileset dir="${build.dir.wp}\wp-content\themes\twentyeleven">
                 <include name="*.php" />
             </fileset>
     </phpcodesniffer>
-		</phpcodesniffer>
 
-	
+</target>
+
+<!-- Copy -Paste detection
+# https://github.com/sebastianbergmann/phpcpd/
+*************************************************************  -->
+<target name="pasta" description="Copy - Paste detection">
+
+	<phpcpd>
+		<fileset dir="${build.dir.wp}\wp-content\themes\twentyeleven">
+			<include name="*.php" />
+	   </fileset>
+	   <formatter type="pmd" outfile="${build.dir.wp}\wp-content\themes\twentyeleven\hi.xml"/>
+	</phpcpd>
 
 </target>
 
