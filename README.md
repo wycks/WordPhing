@@ -20,21 +20,19 @@ WordPress build script using [Phing](http://www.phing.info/).
 - Runs the WP install script (by-passes the 5 minute install).
 - Runs any custom install parameters (optional via `boot.php`)
 
+**Build Automation:**
+
+- PHP CodeSniffer
+- PHP Documentor 2
+- FTP
+- Minify js
+- Zips or Gzips 
+
 **Runtime Automation:**
 
 - Allows you to run scripts on a WordPress install, 
     - For example: delete 1000 posts belonging to a category,  see `run.php` for example
     - Still in *beta* please do not run on live site
-
-
-**Build Automation:**
-
-- PHP Documentor 2
-- FTP
-- Minify js
-- Zips or Gzips 
-- PHP CodeSniffer (experimental, currently uses PEAR)
-
 
 ##Basic Instructions
 
@@ -43,10 +41,11 @@ Open build.properties and fill it out and also read the comments:)
 Command options
 - `"phing wp-install"`      Creates a database and WordPress
 - `"phing wp-install-only"` Creates just WordPress (will not create the database)
-- `"phing wp-ftp"`          FTP upload
 - `"phing wp-clean-all"`    Deletes directory and database (can run separately via `clean-files` or `clean-database`).
-- `"phing wp-run"`          Runs custom script
+- `"phing wp-sniff"`        Runs CodenSniffer
 - `"phing wp-doc"`          Runs PHP Documentor 2
+- `"phing wp-ftp"`          FTP upload
+- `"phing wp-run"`          Runs custom script
 - `"phing wp-min-js"`       Minify JS
 - `"phing wp-zip"`          Creates a zip
 - `"phing wp-gzip"`         Creates a gzip
@@ -65,10 +64,13 @@ WordPhing now contains 2 extra files to run normal PHP and WordPress code, have 
 
  Both files are run from the WordPhing build file root and not the WordPress install root and require `build.properties` to be properly filled out. You can change the location to to run from the WordPress root in `build.xml`. 
 
+ CodeSniffer will automatically output XML reports into HTML for easier readin ::smile::
+ It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Out looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
 
-The file/dir permissions (`chown`)  are commented out by default to prevent issues on Windows ( see line 457 in build.xml for reference).
 
 ##Notes
+
+The file/dir permissions (`chown`)  are commented out by default to prevent issues on Windows ( see line 457 in build.xml for reference).
 
 If there are problems during install you can run WordPhing in debug and verbose modes or both.
 For example: `"phing wp-install -verbose -debug"`

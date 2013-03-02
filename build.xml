@@ -410,9 +410,7 @@
 	<!-- dir to hold the doc files, set to .php by default -->
 	<mkdir dir="${build.wp.doc.output}" />
 
-	<phpdoc2 title="${build.wp.docs.name}"
-	  destdir="${build.wp.doc.output}"
-	  template="responsive">
+	<phpdoc2 title="${build.wp.docs.name}" destdir="${build.wp.doc.output}" template="responsive">
 	   <fileset dir="${build.wp.docs.dir}">
 	      <include name="**/*.php" />
 	   </fileset>
@@ -420,24 +418,48 @@
 
 </target>
 
+
 <!-- PhpCodeSniffer
-# http://pear.php.net/package/PHP_CodeSniffer
-see https://github.com/mrchrisadams/WordPress-Coding-Standards
+
+http://pear.php.net/package/PHP_CodeSniffer
+Use: https://github.com/mrchrisadams/WordPress-Coding-Standards
+ToDo: Append this automatically see /assets/CodeSniffer
+
 *************************************************************  -->
 
-<target name="sniff-it" description="Verify compliance with project code standard">
+<target name="wp-sniff" description="Verify compliance with project code standard">
 
-	<!-- dir to hold the doc files, set to .php by default -->
+	<!-- dir to hold the Codensniffer output  -->
 	<mkdir dir="${build.wp.sniff.output}" />
 
-	<phpcodesniffer haltonerror="false" standard="PEAR" verbosity="1">
-        <formatter outfile="${build.wp.sniff.output}/Codesniffer.txt" type="full" />
-            <fileset dir="${build.dir.wp}\wp-content\themes\twentyeleven">
+	<phpcodesniffer haltonerror="false" format="summary" standard="WordPress" verbosity="1">
+        <formatter outfile="${build.wp.sniff.output.xml}" type="xml" />
+            <fileset dir="${build.wp.sniff.input}">
                 <include name="*.php" />
             </fileset>
-    </phpcodesniffer>
+    </phpcodesniffer>
+
+	<mkdir dir="${build.wp.sniff.output.html}" />
+  	
+	<!--  Let's make XML into HTML so we can read it , added to Html folder for now-->
+    <xslt todir="${build.wp.sniff.output.html}" style="${build.wp.sniff.style}" >
+    	<fileset dir="${build.wp.sniff.output}">
+        	<include name="${build.wp.sniff.xml.file}" />
+  		</fileset>
+	</xslt>
+
+	<copy file="${build.wp.sniff.css}" todir="${build.wp.sniff.output.html}" overwrite="true"/>
+	<copy file="${build.wp.sniff.output.html}/${build.wp.sniff.xml.file}" tofile="${build.wp.sniff.output.html}/${build.wp.sniff.html.file}" overwrite="true"/> 
 
 </target>
+
+
+
+<target name="test">
+
+
+
+</target>	
 
 <!-- Copy -Paste detection
 # https://github.com/sebastianbergmann/phpcpd/
@@ -682,6 +704,7 @@ see https://github.com/mrchrisadams/WordPress-Coding-Standards
 
         <echo msg="$ phing wp-min-js         Minify JavaScript "/>
 		<echo msg="$ phing wp-doc            PHP Documentor 2"/>
+		<echo msg="$ phing wp-sniff          CodeSniffer"/>
         <echo msg="$ phing wp-zip            Creates a zip "/>
         <echo msg="$ phing wp-gzip           Creates a gzip "/>
 
