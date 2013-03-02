@@ -3,11 +3,13 @@ WordPhing
 
 WordPress build script using [Phing](http://www.phing.info/).
 
-- Automated Installing and working with WordPress.
+- Automated installing and working with WordPress.
 - Simple config file and commands to run
 
 
 *Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box on most lamp stacks.
+
+*Some of the advanced options might require additional installations of PHP/PEAR packages*
 
 ## Features
 
@@ -42,7 +44,7 @@ Command options
 - `"phing wp-install"`      Creates a database and WordPress
 - `"phing wp-install-only"` Creates just WordPress (will not create the database)
 - `"phing wp-clean-all"`    Deletes directory and database (can run separately via `clean-files` or `clean-database`).
-- `"phing wp-sniff"`        Runs CodenSniffer
+- `"phing wp-sniff"`        Runs CodeSniffer
 - `"phing wp-doc"`          Runs PHP Documentor 2
 - `"phing wp-ftp"`          FTP upload
 - `"phing wp-run"`          Runs custom script
@@ -56,17 +58,18 @@ Commands are chainable , for example `"phing wp-install wp-gzip"`
  
 ##Advanced Instructions
 
-WordPhing now contains 2 extra files to run normal PHP and WordPress code, have a look at them for examples.
 
- `boot.php` can be run during the install process to customize installation.
+-  `boot.php` can be run during the install process to customize installation.
+-  `run.php` can be run via the `phing wp-run` command on an existing WordPress install
 
- `run.php` can be run via the `phing wp-run` command on an existing WordPress install
+Both files are run from the WordPhing build file root and not the WordPress install root and require `build.properties` to be properly filled out. You can change the location to to run from the WordPress root in `build.xml`. 
 
- Both files are run from the WordPhing build file root and not the WordPress install root and require `build.properties` to be properly filled out. You can change the location to to run from the WordPress root in `build.xml`. 
 
- CodeSniffer will automatically output XML reports into HTML for easier readin ::smile::
- It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Out looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
+-  CodeSniffer will automatically output XML reports into HTML for easier reading :smile:
+ 
+It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Output looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
 
+*Without `WordPress-Coding-Standards` installed it might revert to default PEAR coding standards not tested..*
 
 ##Notes
 
@@ -77,23 +80,20 @@ For example: `"phing wp-install -verbose -debug"`
 
 The install build will not overwrite existing directories or existing databases. It will also Delete the readme.html and wp-sample-config.php
 
-If you want something that has a more command-line features please check out WP-CLI.
-https://github.com/wp-cli/wp-cli
 
 ##Requires
 
 PHP 5.2 + & Phing.
 
- - PHP Documentor 2 requires the latest Phing and the XSL PHP extension. You should use the latest build found here: http://www.phpdoc.org/
- - FTP requires Net_FTP http://pear.php.net/package/Net_FTP/redirected
+ - PHP Documentor 2 & Codesniffer requires the latest Phing and the XSL PHP extension. You should use the latest build found here: [http://www.phpdoc.org/](http://www.phpdoc.org/)
+ - FTP requires Net_FTP [http://pear.php.net/package/Net_FTP](http://pear.php.net/package/Net_FTP)
 
 
 ##Todo
 
 - Database dump + whole site migration
 - Maybe Add git & svn support
-- Fix PhpCodeSniffer to use WordPress standards
-- PHPMD (mess detector)
+- PHPMD (mess detector, requires external)
 - Add backups via Rsync and Amazon
 - CSS minify (yui-compress) requires java :( switch js to yui as well since php one is depreciated.
 - Staging and continuous integration?
@@ -101,7 +101,7 @@ PHP 5.2 + & Phing.
 
 ##Install 
 
-It is recommend you run `"pear upgrade phing/phing"` for the latest release ( required for PHP Documentor 2).
+It is recommend you run `"pear upgrade phing/phing"` for the latest release.
 
 This script will eventually require some optional libraries (http, git, svn, amazon, etc), so you can run `"pear install --alldeps phing/phing"` to get them.
 
