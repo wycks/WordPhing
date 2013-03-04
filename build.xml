@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- set basedir="./" here  if you need to -->
-<project name="Build a WordPress Install" default="help" >
+<!-- set basedir="./" here if you need to -->
+<project name="WordPhing" default="help" >
 
 
     <!-- Load the configuration file -->
@@ -33,7 +33,7 @@
 	    </pdosqlexec>        
 	</target>
 
-    <target name="clean-database">
+    <target name="wp-clean-database">
         <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
         <pdosqlexec url="${build.db.url}"
                   userid="${build.db.userid}"
@@ -70,7 +70,7 @@
 
     <!-- Clean the build directory
 ************************************************************** -->
-    <target name="clean-files"  description="Cleaning the WordPress directory">
+    <target name="wp-clean-files"  description="Cleaning the WordPress directory">
 
 	    <delete dir="${build.dir.wp}" />
 	    <echo msg="${build.dir.wp}" />    
@@ -454,15 +454,11 @@ ToDo: Append this automatically see /assets/CodeSniffer
 </target>
 
 
-
-<target name="test">
-
-
-
-</target>	
-
 <!-- Copy -Paste detection
+# Output XML only
 # https://github.com/sebastianbergmann/phpcpd/
+
+TODO Convert xml to html using /assets/pmd-html.xslt
 *************************************************************  -->
 <target name="pasta" description="Copy - Paste detection">
 
@@ -470,8 +466,24 @@ ToDo: Append this automatically see /assets/CodeSniffer
 		<fileset dir="${build.dir.wp}\wp-content\themes\twentyeleven">
 			<include name="*.php" />
 	   </fileset>
-	   <formatter type="pmd" outfile="${build.dir.wp}\wp-content\themes\twentyeleven\hi.xml"/>
+	   <formatter type="pmd" outfile="${build.dir.wp}\wp-content\themes\mess.xml" />
 	</phpcpd>
+
+</target>
+
+
+<!-- PHPMess detector
+# Fix pathing for output 
+# https://github.com/phpmd/phpmd
+*************************************************************  -->
+<target name="wp-mess" description="Mess Detector">
+
+	<phpmd>
+		<fileset dir="${build.dir.wp}\wp-content\themes\twentythirteen">
+			<include name="*.php" />
+	   </fileset>
+	   <formatter type="html" outfile="${build.dir.wp}\wp-content\themes\hi.html"/>
+	</phpmd>
 
 </target>
 
@@ -615,19 +627,13 @@ ToDo: Append this automatically see /assets/CodeSniffer
 
 	</target>
 
-    <target name="wp-clean">
-	    <phingcall target="clean-database" />
-	    <delete dir="${build.dir.wp}" includeemptydirs="true" />
-	</target>
-
-
 		<!-- Clean  files and DB (delete)
 *************************************************************- -->
 	<target name="wp-clean-all">
-		<phingcall target="clean-files" />
+		<phingcall target="wp-clean-files" />
 		<echo msg="Removed Files in ${build.dir.wp}" />
 
-		<phingcall target="clean-database" />
+		<phingcall target="wp-clean-database" />
 		<echo msg="Removed database ${build.db.name}" />
 	</target>
 
@@ -700,7 +706,7 @@ ToDo: Append this automatically see /assets/CodeSniffer
 
         <echo msg="$ phing wp-ftp            FTP upload "/>
         <echo msg="$ phing wp-run            Runs custom script run.php" />
-        <echo msg="$ phing wp-clean-all      Deletes directory and database, can run separately via clean-files or clean-database." />
+        <echo msg="$ phing wp-clean-all      Deletes directory and database, can run separately via wp-clean-files or wp-clean-database." />
 
         <echo msg="$ phing wp-min-js         Minify JavaScript "/>
 		<echo msg="$ phing wp-doc            PHP Documentor 2"/>
