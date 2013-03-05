@@ -44,6 +44,15 @@
         </pdosqlexec>
     </target>
 
+	<!-- Dump database -->
+	<!--               
+************************************************************** -->
+	<target name="wp-dump">
+		<exec command="mysqldump -h ${build.wp.db.dump.host} -u ${build.wp.db.dump.username} -p${build.wp.db.dump.pass} ${build.wp.db.dump.name} > ${build.wp.db.dump.send}"  />
+    </target>
+
+
+
     <!-- Prepare the build directory 
 ************************************************************** -->
 
