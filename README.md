@@ -40,20 +40,31 @@ WordPress build script using [Phing](http://www.phing.info/).
 
 Open build.properties and fill it out and also read the comments:)
 
-Command options
+Main Command options
+
 - `"phing wp-install"`      Creates a database and WordPress
 - `"phing wp-install-only"` Creates just WordPress (will not create the database)
-- `"phing wp-clean-all"`    Deletes directory and database (can run separately via `clean-files` or `clean-database`).
-- `"phing wp-sniff"`        Runs CodeSniffer
+- `"phing wp-clean-all"`    Deletes directory and database 
+- `"phing wp-reports"`      Run CodeSniffer, PHP Mess Detector, Copy-Paste Detector
 - `"phing wp-doc"`          Runs PHP Documentor 2
-- `"phing wp-ftp"`          FTP upload
-- `"phing wp-run"`          Runs custom script
-- `"phing wp-min-js"`       Minify JS
-- `"phing wp-zip"`          Creates a zip
-- `"phing wp-gzip"`         Creates a gzip
 - `"phing help"`            Command line options
 
-Commands are chainable , for example `"phing wp-install wp-gzip"`   
+
+Lesser Commands
+
+- `"phing wp-ftp"`             FTP upload
+- `"phing wp-run"`             Runs custom WP friendly script
+- `"phing wp-min-js"`          Minify JS
+- `"phing wp-zip"`             Creates a zip
+- `"phing wp-gzip"`            Creates a gzip
+- `"phing wp-clean-files"`     Deletes WP files
+- `"phing wp-clean-database"`  Deletes WP Database
+- `"phing wp-sniff"`           Runs CodeSniffer
+- `"phing wp-cpd"`             Copy-Paste Detector
+- `"phing wp-mess"`            PHP Mess Detector
+
+
+Commands are chainable , for example `"phing wp-install wp-gzip wp-ftp"`   
 
  
 ##Advanced Instructions
@@ -70,6 +81,8 @@ Both files are run from the WordPhing build file root and not the WordPress inst
 It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Output looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
 
 *Without `WordPress-Coding-Standards` installed it might revert to default PEAR coding standards not tested..*
+
+Copy-Paste Detector & PHP Mess Detector require the PEAR packges
 
 ##Notes
 

@@ -20,7 +20,10 @@
         <html>
             <head>
                 <title>phpcs.xsl</title>
-                <link href="PHP-Codesniffer.css" rel="stylesheet" type="text/css" />
+                <style>
+                    table{width:100%}th{text-align:left}th.file{width:80%;color:black}th.notes{width:10%;color:black}span{font-weight:bold}span.warning{color:orange}#name{background-color:#CCC}.error{font-weight:bold;padding-right:5px;color:red;float:left}.details{font-size:12px;border-bottom:1px solid #CCC;margin-top:-12px;color:#686868}.error-wrap{background-color:#e9e9e9;padding-top:10px}
+                </style>
+     
             </head>
             <body>
                 <table>

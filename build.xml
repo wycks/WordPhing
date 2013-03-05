@@ -439,34 +439,40 @@ ToDo: Append this automatically see /assets/CodeSniffer
             </fileset>
     </phpcodesniffer>
 
-	<mkdir dir="${build.wp.sniff.output.html}" />
+	<mkdir dir="${build.wp.sniff.output.temp}" />
+	<mkdir dir="${build.wp.sniff.dir.output.xml}" />
   	
 	<!--  Let's make XML into HTML so we can read it , added to Html folder for now-->
-    <xslt todir="${build.wp.sniff.output.html}" style="${build.wp.sniff.style}" >
+    <xslt todir="${build.wp.sniff.output.temp}" style="${build.wp.sniff.style}" >
     	<fileset dir="${build.wp.sniff.output}">
         	<include name="${build.wp.sniff.xml.file}" />
   		</fileset>
 	</xslt>
 
-	<copy file="${build.wp.sniff.css}" todir="${build.wp.sniff.output.html}" overwrite="true"/>
-	<copy file="${build.wp.sniff.output.html}/${build.wp.sniff.xml.file}" tofile="${build.wp.sniff.output.html}/${build.wp.sniff.html.file}" overwrite="true"/> 
+	<!-- Clean up  -->
+	<copy file="${build.wp.sniff.output.temp}/${build.wp.sniff.xml.file}" tofile="${build.wp.sniff.output.temp}/${build.wp.sniff.html.file}" overwrite="true"/> 
+	<delete file="${build.wp.sniff.output.temp}/${build.wp.sniff.xml.file}" />
+    <move file="${build.wp.sniff.output.temp}/${build.wp.sniff.html.file}" todir="${build.wp.sniff.output}" />
+	<move file="${build.wp.sniff.output.xml}" todir="${build.wp.sniff.dir.output.xml}" />
+	<delete dir="${build.wp.sniff.output.temp}" /> 
+
 
 </target>
 
 
-<!-- Copy -Paste detection
-# Output XML only
+<!-- Copy-Paste detection
 # https://github.com/sebastianbergmann/phpcpd/
+#
 
-TODO Convert xml to html using /assets/pmd-html.xslt
+TODO Converting xml to html using /assets/pmd-html.xslt is broken
 *************************************************************  -->
-<target name="pasta" description="Copy - Paste detection">
+<target name="wp-cpd" description="Copy - Paste detection">
 
 	<phpcpd>
-		<fileset dir="${build.dir.wp}\wp-content\themes\twentyeleven">
+		<fileset dir="${build.wp.sniff.dir}">
 			<include name="*.php" />
 	   </fileset>
-	   <formatter type="pmd" outfile="${build.dir.wp}\wp-content\themes\mess.xml" />
+	   <formatter type="pmd" outfile="${build.wp.sniff.output}\${build.wp.copypaste.xml.file}" />
 	</phpcpd>
 
 </target>
@@ -477,12 +483,15 @@ TODO Convert xml to html using /assets/pmd-html.xslt
 # https://github.com/phpmd/phpmd
 *************************************************************  -->
 <target name="wp-mess" description="Mess Detector">
+	
+	<mkdir dir="${build.wp.sniff.output}" />
+	<!-- <mkdir dir="${build.wp.sniff.dir.output.temp}" /> -->
 
 	<phpmd>
-		<fileset dir="${build.dir.wp}\wp-content\themes\twentythirteen">
+		<fileset dir="${build.wp.sniff.dir}">
 			<include name="*.php" />
 	   </fileset>
-	   <formatter type="html" outfile="${build.dir.wp}\wp-content\themes\hi.html"/>
+	   <formatter type="html" outfile="${build.wp.sniff.output}\${build.wp.mess.html.file}"/>
 	</phpmd>
 
 </target>
@@ -678,10 +687,18 @@ TODO Convert xml to html using /assets/pmd-html.xslt
 	    <echo>FTP Upload Finished!</echo>
 	</target>
 
-		<!-- script run
+
+		<!-- Run Reports
 *************************************************************- -->
-  	<target name="wprun">
-		<phingcall target="wprun" />
+  	<target name="wp-reports">
+  		<echo>Running PHP CodeSniffer</echo>
+		<phingcall target="wp-sniff" />
+
+		<echo>Running Copy-Paste Detector</echo>
+		<phingcall target="wp-cpd" />
+
+		<echo>Running PHP Mess Detector</echo>
+		<phingcall target="wp-mess" />
 	</target>
 
     <!-- Display the available options 
@@ -708,6 +725,7 @@ TODO Convert xml to html using /assets/pmd-html.xslt
         <echo msg="$ phing wp-run            Runs custom script run.php" />
         <echo msg="$ phing wp-clean-all      Deletes directory and database, can run separately via wp-clean-files or wp-clean-database." />
 
+        <echo msg="$ phing wp-reports        Run CodeSniffer, PHP Mess, Copy-Paste Detector"/>
         <echo msg="$ phing wp-min-js         Minify JavaScript "/>
 		<echo msg="$ phing wp-doc            PHP Documentor 2"/>
 		<echo msg="$ phing wp-sniff          CodeSniffer"/>
