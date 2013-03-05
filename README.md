@@ -24,7 +24,7 @@ WordPress build script using [Phing](http://www.phing.info/).
 
 **Build Automation:**
 
-- PHP CodeSniffer
+- PHP CodeSniffer and Reporting
 - PHP Documentor 2
 - FTP
 - Minify js
@@ -75,14 +75,26 @@ Commands are chainable , for example `"phing wp-install wp-gzip wp-ftp"`
 
 Both files are run from the WordPhing build file root and not the WordPress install root and require `build.properties` to be properly filled out. You can change the location to to run from the WordPress root in `build.xml`. 
 
+##Reports
 
--  CodeSniffer will automatically output XML reports into HTML for easier reading :smile:
- 
-It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Output looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
+WordPhing contains 3 reports: 
 
-*Without `WordPress-Coding-Standards` installed it might revert to default PEAR coding standards not tested..*
+- CodeSniffer
+- PHP Copy-Paste Detector
+- PHP Mess Detector
 
-Copy-Paste Detector & PHP Mess Detector require the PEAR packges
+You can run 3 reports using `"phing wp-reports"`.
+
+- CodeSniffer will automatically output XML reports into HTML for easier reading :smile:
+
+ It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Output looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
+
+*Without `WordPress-Coding-Standards` installed it might revert to default PEAR coding standards.. not sure..*
+
+- Copy-Paste Detector requires: [https://github.com/sebastianbergmann/phpcpd](https://github.com/sebastianbergmann/phpcpd)
+- PHP Mess Detector requires [https://github.com/phpmd/phpmd](https://github.com/phpmd/phpmd)
+
+*Copy-Paste Detector output is in XML, until XSLT parser is fixed*
 
 ##Notes
 
@@ -106,7 +118,6 @@ PHP 5.2 + & Phing.
 
 - Database dump + whole site migration
 - Maybe Add git & svn support
-- PHPMD (mess detector, requires external)
 - Add backups via Rsync and Amazon
 - CSS minify (yui-compress) requires java :( switch js to yui as well since php one is depreciated.
 - Staging and continuous integration?
