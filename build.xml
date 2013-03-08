@@ -3,7 +3,6 @@
 <!-- set basedir="./" here if you need to -->
 <project name="WordPhing" default="help" >
 
-
     <!-- Load the configuration file -->
     <property file="build.properties" />
     
@@ -19,10 +18,10 @@
     </tstamp>
 
 	<!-- Create & Clean the database -->
-	<!-- Errors are handled by mySQL 
+	<!-- Errors are handled by PDO
 ************************************************************** -->
 
-	<target name="database">
+	<target name="wp-db-make">
 	    <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
 	    <pdosqlexec url="${build.db.url}"
 	                userid="${build.db.userid}"
@@ -33,7 +32,7 @@
 	    </pdosqlexec>        
 	</target>
 
-    <target name="wp-clean-database">
+    <target name="wp-db-clean">
         <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
         <pdosqlexec url="${build.db.url}"
                   userid="${build.db.userid}"
@@ -44,13 +43,48 @@
         </pdosqlexec>
     </target>
 
-	<!-- Dump database -->
+	<!-- Dump database to file-->
 	<!--               
 ************************************************************** -->
-	<target name="wp-dump">
+
+	<target name="wp-db-dump">
+
+		<mkdir dir="${build.wp.db.dump.folder}" />
+
 		<exec command="mysqldump -h ${build.wp.db.dump.host} -u ${build.wp.db.dump.username} -p${build.wp.db.dump.pass} ${build.wp.db.dump.name} > ${build.wp.db.dump.send}"  />
     </target>
 
+
+	<!-- Move DB from one server to another-->
+	<!-- This is for Direct SQL access so no shared servers  
+	 TODO: This is not complete            
+************************************************************** -->
+
+	<target name="wp-sql-direct-move">
+		<!-- create db on other host -->
+		<exec command="mysqladmin -h 'other_hostname' create db_name"  />
+		<exec command="mysqldump db_name | mysql -h 'other_hostname' db_name"  />
+    </target>
+
+
+	<!-- Move DB from one server to another-->
+	<!-- This will use SCP + SSH so shared servers or those without direct access
+	 TODO: This is not complete         
+************************************************************** -->
+
+	<target name="wp-sql-ssh-move">
+		<!-- move the db + files -->
+		<scp username="john" 
+			 password="smith" 
+			 host="webserver" 
+			 fetch="false" 
+			 todir="/home/john/backup" 
+			 file="${build.wp.db.dump.send}" />
+
+         <!-- Connect and run SQL import -->
+		<ssh username="john" password="smith" host="webserver" command="ls" />
+	 
+    </target>
 
 
     <!-- Prepare the build directory 
@@ -396,25 +430,45 @@
 *************************************************************  -->
 
     <!-- zip -->
-	<target name="zip-it">
+	<target name="wp-zip">
 
-		<!-- zip it -->
+		<!-- zip directory -->
 		<zip destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.zip" basedir="${build.wp.tarball.send}"/>
+		
 	</target>
 
-	<!-- tar gzip -->
+     <target name="wp-zip-file">
+		<!-- zip file-->
+		<zip destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.zip" compression="zip">
+			<fileset dir="${build.dir.wp}">
+		 		<include name="${build.wp.tarball.file}" />
+	 		</fileset>
+	 	</zip>	
+	</target>
 
-	<target name="gzip-it">
+	<!-- ---- -->
+	
+	<target name="wp-gzip">
 
-		<!-- gzip it, can change compression to bzip2, check phing docs-->
+		<!-- gzip directory, can change compression to bzip2, check phing docs-->
 		<tar destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.tar.gz" compression="gzip" basedir="${build.wp.tarball.send}"/>
+
+	</target>
+
+	<target name="wp-gzip-file">
+		<!-- gzip file-->
+		<tar destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.tar.gz" compression="gzip">
+			<fileset dir="${build.dir.wp}">
+		 		<include name="${build.wp.tarball.file}" />
+	 		</fileset>
+	 	</tar>	
 	</target>
 
 
 <!-- PHP Documentor 2 
 # http://www.phpdoc.org/
 *************************************************************  -->
-<target name="doc-it" description="Runs PHP Documentor 2 on your project and outputs results in new folder">
+<target name="wp-doc" description="Runs PHP Documentor 2 on your project and outputs results in new folder">
 
 	<!-- dir to hold the doc files, set to .php by default -->
 	<mkdir dir="${build.wp.doc.output}" />
@@ -509,7 +563,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 #  https://github.com/rgrove/jsmin-php/
 *************************************************************  -->
 
-<target name="min-it">
+<target name="wp-min-js">
 	<jsMin targetDir="${build.wp.jsm.output}" failOnError="false">
 	  <fileset dir="${build.wp.jsmin.dir}">
 	    <include name="**/*.js"/>
@@ -523,7 +577,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 
 	<target name="wp-install" depends="prepare">
 
-		<phingcall target="database" />
+		<phingcall target="wp-db-make" />
 
 		<echo msg="Created a new database" />
 		
@@ -651,32 +705,8 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 		<phingcall target="wp-clean-files" />
 		<echo msg="Removed Files in ${build.dir.wp}" />
 
-		<phingcall target="wp-clean-database" />
+		<phingcall target="wp-db-clean" />
 		<echo msg="Removed database ${build.db.name}" />
-	</target>
-
-
-		<!-- Tarball calls
-*************************************************************- -->
-    <target name="wp-zip">
-		<phingcall target="zip-it" />
-	</target>
-
-    <target name="wp-gzip">
-		<phingcall target="gzip-it" />
-	</target>
-
-
-		<!-- PHP Documentor 2
-*************************************************************- -->
-    <target name="wp-doc">
-		<phingcall target="doc-it" />
-	</target>
-
-		<!-- JsMin
-*************************************************************- -->
-    <target name="wp-min-js">
-		<phingcall target="min-it" />
 	</target>
 
 
@@ -727,20 +757,22 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
         <echo msg="Please read the build.properties for more details" />
         <echo msg="------------------" />
         
-        <echo msg="$ phing wp-install        Creates a new database, downloads and installs WordPress, Plugins and Themes" />
-        <echo msg="$ phing wp-install-only   Downloads and installs WordPress, Plugins, Themes - no database setup" />
+        <echo msg="$ phing wp-install          Creates a new database, downloads and installs WordPress, Plugins and Themes" />
+        <echo msg="$ phing wp-install-only     Downloads and installs WordPress, Plugins, Themes - no database setup" />
 
-        <echo msg="$ phing wp-ftp            FTP upload "/>
-        <echo msg="$ phing wp-run            Runs custom script run.php" />
-        <echo msg="$ phing wp-clean-all      Deletes directory and database, can run separately via wp-clean-files or wp-clean-database." />
+        <echo msg="$ phing wp-db-dump          Export DB *.sql "/>
+        <echo msg="$ phing wp-ftp              FTP upload "/>
+        <echo msg="$ phing wp-run              Runs custom script run.php" />
+        <echo msg="$ phing wp-clean-all        Deletes directory and database, can run separately via wp-clean-files or wp-db-clean." />
 
-        <echo msg="$ phing wp-reports        Run CodeSniffer, PHP Mess, Copy-Paste Detector"/>
-        <echo msg="$ phing wp-min-js         Minify JavaScript "/>
-		<echo msg="$ phing wp-doc            PHP Documentor 2"/>
-		<echo msg="$ phing wp-sniff          CodeSniffer"/>
-        <echo msg="$ phing wp-zip            Creates a zip "/>
-        <echo msg="$ phing wp-gzip           Creates a gzip "/>
-
+        <echo msg="$ phing wp-reports          Run CodeSniffer, PHP Mess, Copy-Paste Detector"/>
+        <echo msg="$ phing wp-min-js           Minify JavaScript "/>
+		<echo msg="$ phing wp-doc              PHP Documentor 2"/>
+		<echo msg="$ phing wp-sniff            CodeSniffer"/>
+        <echo msg="$ phing wp-zip              Creates a zip from Dir "/>
+        <echo msg="$ phing wp-zip-file         Creates a zip from file"/>
+        <echo msg="$ phing wp-gzip             Creates a gzip "/>
+        <echo msg="$ phing wp-gzip-file        Creates a gzip from file"/>
         
     </target>
 

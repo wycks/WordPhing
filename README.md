@@ -45,6 +45,7 @@ Main Command options
 - `"phing wp-install"`      Creates a database and WordPress
 - `"phing wp-install-only"` Creates just WordPress (will not create the database)
 - `"phing wp-clean-all"`    Deletes directory and database 
+- `"phing wp-db-dump"`      Export DB *.sql  
 - `"phing wp-reports"`      Run CodeSniffer, PHP Mess Detector, Copy-Paste Detector
 - `"phing wp-doc"`          Runs PHP Documentor 2
 - `"phing help"`            Command line options
@@ -55,8 +56,10 @@ Lesser Commands
 - `"phing wp-ftp"`             FTP upload
 - `"phing wp-run"`             Runs custom WP friendly script
 - `"phing wp-min-js"`          Minify JS
-- `"phing wp-zip"`             Creates a zip
+- `"phing wp-zip"`             Creates a zip from directory
+- `"phing wp-zip-file"`        Creates a zip from file
 - `"phing wp-gzip"`            Creates a gzip
+- `"phing wp-gzip-file"`       Creates a gzip from a file
 - `"phing wp-clean-files"`     Deletes WP files
 - `"phing wp-clean-database"`  Deletes WP Database
 - `"phing wp-sniff"`           Runs CodeSniffer
