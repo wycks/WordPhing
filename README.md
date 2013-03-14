@@ -13,7 +13,7 @@ WordPress build script using [Phing](http://www.phing.info/).
 
 ## Features
 
-**Installation Automation:**
+**Installation**
 
 - Creation of a new database (optional)
 - Downloads and installs WordPress (latest stable)
@@ -24,7 +24,8 @@ WordPress build script using [Phing](http://www.phing.info/).
 
 **Build Automation:**
 
-- PHP CodeSniffer and Reporting
+- SQL Export
+- PHP CodeSniffer and Copy/Paste Detector
 - PHP Documentor 2
 - FTP
 - Minify js
@@ -42,19 +43,33 @@ Open build.properties and fill it out and also read the comments:)
 
 Main Command options
 
-- `"phing wp-install"`      Creates a database and WordPress
-- `"phing wp-install-only"` Creates just WordPress (will not create the database)
-- `"phing wp-clean-all"`    Deletes directory and database 
-- `"phing wp-db-dump"`      Export DB *.sql  
-- `"phing wp-reports"`      Run CodeSniffer, PHP Mess Detector, Copy-Paste Detector
-- `"phing wp-doc"`          Runs PHP Documentor 2
-- `"phing help"`            Command line options
+- `"phing wp-install"`         Creates a database and WordPress
+- `"phing wp-install-only"`    Creates just WordPress (will not create the database)
+- `"phing wp-clean-all"`       Deletes directory and database 
+- `"phing wp-reports"`         Run CodeSniffer, PHP Mess Detector, Copy-Paste Detector
+- `"phing wp-doc"`             Runs PHP Documentor 2
+- `"phing wp-run"`             Runs custom WP friendly script
+- `"phing help"`               Command line options
 
-
-Lesser Commands
+Move Commands      
 
 - `"phing wp-ftp"`             FTP upload
-- `"phing wp-run"`             Runs custom WP friendly script
+- `"phing wp-db-dump"`         Export DB *.sql
+- `"phing wp-direct-move"`     ..not tested yet    
+- `"phing wp-ssh-move"`        ..not tested yet
+
+Git Commands
+
+- `"phing wp-git-init"`        Initialize a git repo   
+- `"phing wp-git-commit"`      Prompts for a commit msg before commit      
+- `"phing wp-git-clone"`             
+- `"phing wp-git-pull"`          
+- `"phing wp-git-push"`
+- `"phing wp-git-branch"`    
+
+
+Other Commands
+
 - `"phing wp-min-js"`          Minify JS
 - `"phing wp-zip"`             Creates a zip from directory
 - `"phing wp-zip-file"`        Creates a zip from file
@@ -67,7 +82,7 @@ Lesser Commands
 - `"phing wp-mess"`            PHP Mess Detector
 
 
-Commands are chainable , for example `"phing wp-install wp-gzip wp-ftp"`   
+Commands are chainable , for example `"phing wp-install wp-git-init"`   
 
  
 ##Advanced Instructions
@@ -119,11 +134,10 @@ PHP 5.2 + & Phing.
 
 ##Todo
 
-- Database dump + whole site migration
+- Remote Database dump + whole site migration
 - Maybe Add git & svn support
 - Add backups via Rsync and Amazon
 - CSS minify (yui-compress) requires java :( switch js to yui as well since php one is depreciated.
-- Staging and continuous integration?
 
 
 ##Install 

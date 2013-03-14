@@ -60,7 +60,7 @@
 	 TODO: This is not complete            
 ************************************************************** -->
 
-	<target name="wp-sql-direct-move">
+	<target name="wp-direct-move">
 		<!-- create db on other host -->
 		<exec command="mysqladmin -h 'other_hostname' create db_name"  />
 		<exec command="mysqldump db_name | mysql -h 'other_hostname' db_name"  />
@@ -72,7 +72,7 @@
 	 TODO: This is not complete         
 ************************************************************** -->
 
-	<target name="wp-sql-ssh-move">
+	<target name="wp-ssh-move">
 		<!-- move the db + files -->
 		<scp username="john" 
 			 password="smith" 
@@ -446,7 +446,6 @@
 	 	</zip>	
 	</target>
 
-	<!-- ---- -->
 	
 	<target name="wp-gzip">
 
@@ -571,6 +570,35 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 	</jsMin>
 </target>
 
+
+<!-- Git Stuff
+#  
+*************************************************************  -->
+<target name="wp-git-init">
+	<exec command="git init ${build.git.init}" />
+</target>
+
+<target name="wp-git-commit">
+	<input propertyName="commit.entered" defaultValue="default">Enter a commit msg please:</input>
+	<exec command="git commit -m ${commit.entered}" /> 
+	<echo msg="yes! git commit is ${commit.entered}" />
+</target>
+
+<target name="wp-git-clone">
+	<exec command="git clone ${build.git.clone}" />
+</target>
+
+<target name="wp-git-push">
+	<exec command="git push ${build.git.push}" />
+</target>
+
+<target name="wp-git-pull">
+	<exec command="git pull ${build.git.pull}" />
+</target>
+
+<target name="wp-git-branch">
+	<exec command="git branch ${build.git.branch}" />
+</target>
 
 	<!-- Our main installer * This will install the DB and WordPress
 ************************************************************* -->
