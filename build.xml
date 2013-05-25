@@ -232,10 +232,10 @@
 				<reflexive file="${build.dir.wp}/wp-config.php">
 					<filterchain>
 						<replaceregexp>
-							<regexp pattern="(define\('DB_NAME', ')\w+('\);)" replace="\1${build.db.name}\2"/>
-							<regexp pattern="(define\('DB_USER', ')\w+('\);)" replace="\1${build.db.userid}\2"/>
-							<regexp pattern="(define\('DB_PASSWORD', ')\w+('\);)" replace="\1${build.db.password}\2"/>
-							<regexp pattern="(define\('DB_HOST', ')\w+('\);)" replace="\1${build.db.wp.host}\2"/>
+							<regexp pattern="(define\('DB_NAME', )'[^']+'(\);)" replace="\1'${build.db.name}'\2"/>
+							<regexp pattern="(define\('DB_USER', )'[^']+'(\);)" replace="\1'${build.db.userid}'\2"/>
+							<regexp pattern="(define\('DB_PASSWORD', )'[^']+'(\);)" replace="\1'${build.db.password}'\2"/>
+							<regexp pattern="(define\('DB_HOST', )'[^']+'(\);)" replace="\1'${build.db.wp.host}'\2"/>
 						</replaceregexp>
 					</filterchain>
 				</reflexive>
@@ -359,6 +359,9 @@
 	class BarTask extends Task {
           
         function main() {
+        
+        	// In case we're running from a path other than where wordpress is installed...
+	        chdir('${build.dir.wp}');
 
 	        define( 'ABSPATH', '${build.dir.wp}' . '/');
 	          
@@ -369,17 +372,17 @@
 	        require_once('${build.dir.wp}/wp-load.php');
 	        require_once('${build.dir.wp}/wp-admin/includes/upgrade.php');
 	        require_once('${build.dir.wp}/wp-includes/wp-db.php');
-
 	          
 	        $public = true;
 	        $result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
 	        //we need to update the db version for some reason
-	          update_option( 'db_version', $wp_db_version );
+	        update_option( 'db_version', $wp_db_version );
+	        
+	        require_once('${build.dir.wp}/wp-admin/admin.php');
 
 	        //edit this script, do not edit this class directly
-	        require('boot.php');
-
+	        require('${build.dir.work}/boot.php');
 
         }
     }
@@ -580,7 +583,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 
 <target name="wp-git-commit">
 	<input propertyName="commit.entered" defaultValue="default">Enter a commit msg please:</input>
-	<exec command="git commit -m ${commit.entered}" /> 
+	<exec command="git commit -am ${commit.entered}" /> 
 	<echo msg="yes! git commit is ${commit.entered}" />
 </target>
 
@@ -739,7 +742,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 
 
 		<!-- FTP
-*************************************************************- -->
+*************************************************************- 
 
 	<target name="wp-ftp">
 	    <echo>Uploading files to FTP</echo>
@@ -754,6 +757,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 	    <echo>FTP Upload Finished!</echo>
 	</target>
 
+-->
 
 		<!-- Run Reports
 *************************************************************- -->
