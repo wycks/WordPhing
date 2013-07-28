@@ -7,35 +7,33 @@ WordPress build script using [Phing](http://www.phing.info/).
 - Simple config file and commands to run
 
 
-*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box on most lamp stacks.
-
-*Some of the advanced options might require additional installations of PHP/PEAR packages*
+*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails, etc). It should work right out of the box on most lamp stacks. Some of the advanced options might require additional installations of PHP/PEAR packages*
 
 ## Features
 
 **Installation**
 
 - Creation of a new database (optional)
-- Downloads and installs WordPress (latest stable)
+- Downloads and installs WordPress (latest stable or nightly)
 - Download and installs plugins and/or themes
 - Appends needed info to your wp-config
-- Runs the WP install script (by-passes the 5 minute install).
-- Runs any custom install parameters (optional via `boot.php`)
+- Runs the WP install script (by-passes the 5 minute install)
+- Custom install parameters (optional via `boot.php`)
 
 **Build Automation:**
 
 - SQL Export
-- PHP CodeSniffer and Copy/Paste Detector
+- Git
 - PHP Documentor 2
-- FTP
+- FTP 
 - Minify js
 - Zips or Gzips 
 
 **Runtime Automation:**
 
-- Allows you to run scripts on a WordPress install, 
-    - For example: delete 1000 posts belonging to a category,  see `run.php` for example
-    - Still in *beta* please do not run on live site
+- Allows you to run scripts on a WordPress install (optional via `run.php`), 
+	- For example: delete 1000 posts belonging to a category.
+	- Still in *beta* please do not run on live site
 
 ##Basic Instructions
 
@@ -43,29 +41,25 @@ Open build.properties and fill it out and also read the comments:)
 
 Main Command options
 
-- `"phing wp-install"`         Creates a database and WordPress
-- `"phing wp-install-only"`    Creates just WordPress (will not create the database)
-- `"phing wp-clean-all"`       Deletes directory and database 
-- `"phing wp-reports"`         Run CodeSniffer, PHP Mess Detector, Copy-Paste Detector
+- `"phing wp-install"`         Creates a database and installs WordPress
+- `"phing wp-install-only"`    Installs just WordPress (will not create the db)
+- `"phing wp-clean-all"`       Deletes WP directory and database 
 - `"phing wp-doc"`             Runs PHP Documentor 2
-- `"phing wp-run"`             Runs custom WP friendly script
+- `"phing wp-run"`             Runs custom script on WP
 - `"phing help"`               Command line options
 
 Move Commands      
 
-- `"phing wp-ftp"`             FTP upload
+- `"phing wp-ftp"`             FTP upload - commented out by default
 - `"phing wp-db-dump"`         Export DB *.sql
 - `"phing wp-direct-move"`     ..not tested yet    
 - `"phing wp-ssh-move"`        ..not tested yet
 
 Git Commands
 
-- `"phing wp-git-init"`        Initialize a git repo   
-- `"phing wp-git-commit"`      Prompts for a commit msg before commit      
-- `"phing wp-git-clone"`             
-- `"phing wp-git-pull"`          
-- `"phing wp-git-push"`
-- `"phing wp-git-branch"`    
+- `"phing wp-git-init"`        Initialize a git repo using  
+- `"phing wp-git-commit"`      Prompts for a commit msg - also takes commit options (-A for example)     
+- `"phing wp-git-clone"`, `"phing wp-git-pull"`, `"phing wp-git-push"`, `"phing wp-git-branch"`    
 
 
 Other Commands
@@ -77,9 +71,6 @@ Other Commands
 - `"phing wp-gzip-file"`       Creates a gzip from a file
 - `"phing wp-clean-files"`     Deletes WP files
 - `"phing wp-clean-database"`  Deletes WP Database
-- `"phing wp-sniff"`           Runs CodeSniffer
-- `"phing wp-cpd"`             Copy-Paste Detector
-- `"phing wp-mess"`            PHP Mess Detector
 
 
 Commands are chainable , for example `"phing wp-install wp-git-init"`   
@@ -93,60 +84,41 @@ Commands are chainable , for example `"phing wp-install wp-git-init"`
 
 Both files are run from the WordPhing build file root and not the WordPress install root and require `build.properties` to be properly filled out. You can change the location to to run from the WordPress root in `build.xml`. 
 
-##Reports
-
-WordPhing contains 3 reports: 
-
-- CodeSniffer
-- PHP Copy-Paste Detector
-- PHP Mess Detector
-
-You can run 3 reports using `"phing wp-reports"`.
-
-- CodeSniffer will automatically output XML reports into HTML for easier reading :smile:
-
- It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Output looks like [this](https://raw.github.com/wycks/CodeSnifferToHTML/master/screenshot.jpg)
-
-*Without `WordPress-Coding-Standards` installed it might revert to default PEAR coding standards.. not sure..*
-
-- Copy-Paste Detector requires: [https://github.com/sebastianbergmann/phpcpd](https://github.com/sebastianbergmann/phpcpd)
-- PHP Mess Detector requires [https://github.com/phpmd/phpmd](https://github.com/phpmd/phpmd)
-
-*Copy-Paste Detector output is in XML, until XSLT parser is fixed*
 
 ##Notes
 
-The file/dir permissions (`chown`)  are commented out by default to prevent issues on Windows ( see line 457 in build.xml for reference).
+The file/dir permissions (`chown/chmod`)  are commented out by default to prevent issues on Windows ( see line 567 in build.xml to uncomment).
 
 If there are problems during install you can run WordPhing in debug and verbose modes or both.
 For example: `"phing wp-install -verbose -debug"`
 
 The install build will not overwrite existing directories or existing databases. It will also Delete the readme.html and wp-sample-config.php
 
+##Reports
+
+PHP reports (PhpCodeSniffer, Copy-Paste detection and PHPMess) have been removed from WordPhing and left for posterity in /codesniffing. It was getting to complicated.
 
 ##Requires
 
 PHP 5.2 + & Phing.
 
- - PHP Documentor 2 & Codesniffer requires the latest Phing and the XSL PHP extension. You should use the latest build found here: [http://www.phpdoc.org/](http://www.phpdoc.org/)
- - FTP requires Net_FTP [http://pear.php.net/package/Net_FTP](http://pear.php.net/package/Net_FTP)
-
+ - PHP Documentor 2 requires the latest Phing and the XSL PHP extension. You should use the latest build found here: [http://www.phpdoc.org/](http://www.phpdoc.org/)
+ - FTP requires Net_FTP [http://pear.php.net/package/Net_FTP](http://pear.php.net/package/Net_FTP) 
 
 ##Todo
 
-- Remote Database dump + whole site migration
-- Maybe Add git & svn support
+- Whole site migration
+- SVN support
 - Add backups via Rsync and Amazon
-- CSS minify (yui-compress) requires java :( switch js to yui as well since php one is depreciated.
-
+- Better CSS/JS minify via node, java or ruby?
 
 ##Install 
 
-It is recommend you run `"pear upgrade phing/phing"` for the latest release.
+First check in your PHP/PEAR folder to see if /Phing is alredy there. For the latest release it's recommend you run `"pear upgrade phing/phing"`.
 
-This script will eventually require some optional libraries (http, git, svn, amazon, etc), so you can run `"pear install --alldeps phing/phing"` to get them.
+This script will eventually might require some optional libraries , so you can run `"pear install --alldeps phing/phing"` to get them.
 
-- Seperate install if pear/phing is not included in your stack.
+- If PEAR/phing is not included in your stack.
 
 http://www.phing.info/docs/guide/stable/chapters/Setup.html#SystemRequirements
 

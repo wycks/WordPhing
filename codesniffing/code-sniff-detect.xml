@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+
+I have removed PhpCodeSniffer, Copy-Paste detection and PHPMess detector from the main build to keep it simple.
+This is here for posterity,   it's really better left to your IDE 
+
+It is recommend you install https://github.com/mrchrisadams/WordPress-Coding-Standards as this is the default setting for WordPhing and not included in the PEAR package. Output looks like this
+
+Without WordPress-Coding-Standards installed it might revert to default PEAR coding standards.. not sure..
+
+Copy-Paste Detector requires: https://github.com/sebastianbergmann/phpcpd
+PHP Mess Detector requires https://github.com/phpmd/phpmd
+Copy-Paste Detector output is in XML, until XSLT parser is fixed
+
+
+
+************************************************************
+
+PhpCodeSniffer
+
+http://pear.php.net/package/PHP_CodeSniffer
+Use: https://github.com/mrchrisadams/WordPress-Coding-Standards
+ToDo: Append this automatically see /assets/CodeSniffer
+
+*************************************************************  -->
+
+<target name="wp-sniff" description="Verify compliance with project code standard">
+
+	<!-- dir to hold the Codensniffer output  -->
+	<mkdir dir="${build.wp.sniff.output}" />
+
+	<phpcodesniffer haltonerror="false" format="summary" standard="WordPress" verbosity="1">
+		<formatter outfile="${build.wp.sniff.output.xml}" type="xml" />
+			<fileset dir="${build.wp.sniff.input}">
+				<include name="*.php" />
+			</fileset>
+	</phpcodesniffer>
+
+	<mkdir dir="${build.wp.sniff.output.temp}" />
+	<mkdir dir="${build.wp.sniff.dir.output.xml}" />
+	
+	<!--  Let's make XML into HTML so we can read it , added to Html folder for now-->
+	<xslt todir="${build.wp.sniff.output.temp}" style="${build.wp.sniff.style}" >
+		<fileset dir="${build.wp.sniff.output}">
+			<include name="${build.wp.sniff.xml.file}" />
+		</fileset>
+	</xslt>
+
+	<!-- Clean up  -->
+	<copy file="${build.wp.sniff.output.temp}/${build.wp.sniff.xml.file}" tofile="${build.wp.sniff.output.temp}/${build.wp.sniff.html.file}" overwrite="true"/> 
+	<delete file="${build.wp.sniff.output.temp}/${build.wp.sniff.xml.file}" />
+	<move file="${build.wp.sniff.output.temp}/${build.wp.sniff.html.file}" todir="${build.wp.sniff.output}" />
+	<move file="${build.wp.sniff.output.xml}" todir="${build.wp.sniff.dir.output.xml}" />
+	<delete dir="${build.wp.sniff.output.temp}" /> 
+
+
+</target>
+
+
+<!-- Copy-Paste detection
+# https://github.com/sebastianbergmann/phpcpd/
+#
+
+<!-- TODO Converting xml to html using /assets/pmd-html.xslt is broken
+*************************************************************  -->
+<target name="wp-cpd" description="Copy - Paste detection">
+
+	<phpcpd>
+		<fileset dir="${build.wp.sniff.dir}">
+			<include name="*.php" />
+	   </fileset>
+	   <formatter type="pmd" outfile="${build.wp.sniff.output}\${build.wp.copypaste.xml.file}" />
+	</phpcpd>
+
+</target>
+
+
+<!-- PHPMess detector
+# Fix pathing for output 
+# https://github.com/phpmd/phpmd
+*************************************************************  -->
+<target name="wp-mess" description="Mess Detector">
+	
+	<mkdir dir="${build.wp.sniff.output}" />
+	<!-- <mkdir dir="${build.wp.sniff.dir.output.temp}" /> -->
+
+	<phpmd>
+		<fileset dir="${build.wp.sniff.dir}">
+			<include name="*.php" />
+	   </fileset>
+	   <formatter type="html" outfile="${build.wp.sniff.output}\${build.wp.mess.html.file}"/>
+	</phpmd>
+
+</target>
+
+
+		<!-- Run Reports
+*************************************************************- -->
+	<target name="wp-reports">
+		<echo>Running PHP CodeSniffer</echo>
+		<phingcall target="wp-sniff" />
+
+		<echo>Running Copy-Paste Detector</echo>
+		<phingcall target="wp-cpd" />
+
+		<echo>Running PHP Mess Detector</echo>
+		<phingcall target="wp-mess" />
+	</target>
+
+ 
+<!-- 
+build.properties info for the above
+
+#---------------------------------------------------------------------------
+# WordPress Report Stuff
+#---------------------------------------------------------------------------
+
+#Base for all reports for some reason it's named sniff
+#Change this to your theme/plugin or whatever you want to run report on
+#
+build.wp.sniff.dir=${build.dir.work}\wp-content\themes\twentythirteen
+
+# change output dir if needed
+build.wp.sniff.dir.output=${build.wp.sniff.dir}\reports
+build.wp.sniff.dir.output.temp=${build.wp.sniff.dir.output}\temp
+build.wp.sniff.dir.output.xml=${build.wp.sniff.dir.output}\xml
+#don't change this
+build.wp.sniff.input =${build.wp.sniff.dir}
+build.wp.sniff.output=${build.wp.sniff.dir.output}
+build.wp.sniff.output.xml=${build.wp.sniff.output}\${build.wp.sniff.xml.file}
+build.wp.sniff.output.temp=${build.wp.sniff.dir.output.temp} 
+
+#----------------
+# PhpMess - https://github.com/phpmd/phpmd 
+# 
+build.wp.mess.html.file=PhpMess-${DSTAMP}.html
+#----------------
+
+#----------------
+# CopyPaste Detector - https://github.com/phpmd/phpmd 
+# 
+build.wp.copypaste.xml.file=CopyPaste-${DSTAMP}.xml
+#converting to HTML doesn't work :(
+#build.wp.copypaste.html.file=CopyPaste.html
+#build.wp.sniff.copypaste.style=.\assets\Copy-Paste-Detector\pmd-html.xsl
+#----------------
+
+#----------------
+# #PhpCodeSniffer
+# 
+# This is set to WordPress by default you need this in your PEAR CodeSniffer folder
+# https://github.com/mrchrisadams/WordPress-Coding-Standards
+
+build.wp.sniff.xml.file=Codesniff-${DSTAMP}.xml
+build.wp.sniff.html.file=Codesniff-${DSTAMP}.html
+#style and css 
+build.wp.sniff.style=.\assets\CodeSniffer\PHP-Codesniffer.xsl
+#----------------
+
+
+-->

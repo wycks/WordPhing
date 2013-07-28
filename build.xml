@@ -3,45 +3,45 @@
 <!-- set basedir="./" here if you need to -->
 <project name="WordPhing" default="help" >
 
-    <!-- Load the configuration file -->
-    <property file="build.properties" />
-    
-    <!-- set a temp dirs -->
-    <property name="build.dir.tmp" value="${build.dir.wp}/tmp"/>
-    <property name="build.dir.tmp.plugins" value="${build.dir.tmp}/plugins"/>
-    <property name="build.dir.tmp.themes" value="${build.dir.tmp}/themes"/>
+	<!-- Load the configuration file -->
+	<property file="build.properties" />
+	
+	<!-- set a temp dirs -->
+	<property name="build.dir.tmp" value="${build.dir.wp}/tmp"/>
+	<property name="build.dir.tmp.plugins" value="${build.dir.tmp}/plugins"/>
+	<property name="build.dir.tmp.themes" value="${build.dir.tmp}/themes"/>
 
 	<tstamp>
 		<!-- Format is, e.g. Sat, 03 Oct 2009, 16:31 -->
 		<format property="buildtime" pattern="${build.dt.buildformat}"/>
 		<format property="filestamp" pattern="${build.dt.fileformat}"/>
-    </tstamp>
+	</tstamp>
 
 	<!-- Create & Clean the database -->
 	<!-- Errors are handled by PDO
 ************************************************************** -->
 
 	<target name="wp-db-make">
-	    <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
-	    <pdosqlexec url="${build.db.url}"
-	                userid="${build.db.userid}"
-	                password="${build.db.password}"
-	                onerror="abort"
-	                autocommit="true">
-	        CREATE DATABASE ${build.db.name};
-	    </pdosqlexec>        
+		<taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask"/>
+		<pdosqlexec url="${build.db.url}"
+					userid="${build.db.userid}"
+					password="${build.db.password}"
+					onerror="abort"
+					autocommit="true">
+			CREATE DATABASE ${build.db.name};
+		</pdosqlexec>        
 	</target>
 
-    <target name="wp-db-clean">
-        <taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
-        <pdosqlexec url="${build.db.url}"
-                  userid="${build.db.userid}"
-                  password="${build.db.password}"
-                  onerror="abort"
-                  autocommit="true">
-            DROP DATABASE ${build.db.name};
-        </pdosqlexec>
-    </target>
+	<target name="wp-db-clean">
+		<taskdef name="pdosqlexec" classname="phing.tasks.ext.pdo.PDOSQLExecTask" />
+		<pdosqlexec url="${build.db.url}"
+				  userid="${build.db.userid}"
+				  password="${build.db.password}"
+				  onerror="abort"
+				  autocommit="true">
+			DROP DATABASE ${build.db.name};
+		</pdosqlexec>
+	</target>
 
 	<!-- Dump database to file-->
 	<!--               
@@ -52,7 +52,7 @@
 		<mkdir dir="${build.wp.db.dump.folder}" />
 
 		<exec command="mysqldump -h ${build.wp.db.dump.host} -u ${build.wp.db.dump.username} -p${build.wp.db.dump.pass} ${build.wp.db.dump.name} > ${build.wp.db.dump.send}"  />
-    </target>
+	</target>
 
 
 	<!-- Move DB from one server to another-->
@@ -64,7 +64,7 @@
 		<!-- create db on other host -->
 		<exec command="mysqladmin -h 'other_hostname' create db_name"  />
 		<exec command="mysqldump db_name | mysql -h 'other_hostname' db_name"  />
-    </target>
+	</target>
 
 
 	<!-- Move DB from one server to another-->
@@ -81,47 +81,47 @@
 			 todir="/home/john/backup" 
 			 file="${build.wp.db.dump.send}" />
 
-         <!-- Connect and run SQL import -->
+		 <!-- Connect and run SQL import -->
 		<ssh username="john" password="smith" host="webserver" command="ls" />
 	 
-    </target>
+	</target>
 
 
-    <!-- Prepare the build directory 
+	<!-- Prepare the build directory 
 ************************************************************** -->
 
    <!--  <target name="prepare" depends="clean" description="Creating new WordPress directory"> -->
-    <target name="prepare"  description="Creating new WordPress directory">
+	<target name="prepare"  description="Creating new WordPress directory">
 
-        <echo msg="Preparing build directory" />
+		<echo msg="Preparing build directory" />
 
 
-       <!--  build now will not overwrite existing directories -->
-        <available file="${build.dir.wp}" type="dir" property="dirfound" value="true"/>
+	   <!--  build now will not overwrite existing directories -->
+		<available file="${build.dir.wp}" type="dir" property="dirfound" value="true"/>
 		<fail if="dirfound" message="This directory already exists!" />
-        
-        <!-- create our root location -->
-        <mkdir dir="${build.dir.wp}" />
-               
-        <!-- create temp directories for downloads -->
-        <mkdir dir="${build.dir.tmp}" />
-        <mkdir dir="${build.dir.tmp.plugins}" />
-        <mkdir dir="${build.dir.tmp.themes}" />
-        
-    </target>
+		
+		<!-- create our root location -->
+		<mkdir dir="${build.dir.wp}" />
+			   
+		<!-- create temp directories for downloads -->
+		<mkdir dir="${build.dir.tmp}" />
+		<mkdir dir="${build.dir.tmp.plugins}" />
+		<mkdir dir="${build.dir.tmp.themes}" />
+		
+	</target>
 
 
-    <!-- Clean the build directory
+	<!-- Clean the build directory
 ************************************************************** -->
-    <target name="wp-clean-files"  description="Cleaning the WordPress directory">
+	<target name="wp-clean-files"  description="Cleaning the WordPress directory">
 
-	    <delete dir="${build.dir.wp}" />
-	    <echo msg="${build.dir.wp}" />    
+		<delete dir="${build.dir.wp}" />
+		<echo msg="${build.dir.wp}" />    
 
-  	</target>
+	</target>
 
-    
-    <!-- Download WordPress from .org 
+	
+	<!-- Download WordPress from .org 
 ************************************************************* -->
 	<target name="installwordpress" description="Download WordPress">
 
@@ -144,9 +144,9 @@
   
 		</copy>
 
-    </target>
+	</target>
 
-    <!-- Download WordPress Plugins 
+	<!-- Download WordPress Plugins 
 ************************************************************* -->
 
 	<target name="downloadplugin" description="Download WordPress Plugin">
@@ -154,10 +154,10 @@
 		<!-- download our plugin zip :: note this expects a standard wordpress packaged plugin file -->
 		<httpget url="${wppluginurl}" dir="${build.dir.tmp.plugins}" />
 
-    </target>
-    
+	</target>
+	
    
-    <!-- Loop over properties list of wp plugins to install 
+	<!-- Loop over properties list of wp plugins to install 
 ************************************************************* -->
 	<target name="installplugins" description="Download Plugins" >
 
@@ -190,9 +190,9 @@
 		<httpget url="${wpthemeurl}" dir="${build.dir.tmp.themes}" />
 
 	</target>
-    
+	
    
-    <!-- Loop over properties list of wp themes to install 
+	<!-- Loop over properties list of wp themes to install 
 *************************************************************  -->
 	<target name="installthemes" description="Install themes" >
 
@@ -287,11 +287,9 @@
 			<then>
 
 				<echo msg="Setting SAVEQUERIES in wp-config.php" />
-
 				
 				<append destFile="${build.dir.wp}/wp-config.php" text="${line.separator} define('SAVEQUERIES', ${build.wp.config.savequeries} ); ${line.separator}" />
 					
-
 			</then>
 		</if>		
 
@@ -337,15 +335,15 @@
 
 	</target>
 
- 	<!-- Delete temp dir !-->
-    <target name="cleantmp" description="Deletes tmp directory needed for install">
+	<!-- Delete temp dir !-->
+	<target name="cleantmp" description="Deletes tmp directory needed for install">
 
-        <echo msg="Cleaning tmp directory" />
-        
-        <!-- remove temp location -->
-        <delete dir="${build.dir.tmp}" includeemptydirs="true" failonerror="true" />
-        
-    </target>
+		<echo msg="Cleaning tmp directory" />
+		
+		<!-- remove temp location -->
+		<delete dir="${build.dir.tmp}" includeemptydirs="true" failonerror="true" />
+		
+	</target>
 
 
 <!-- Bypass the wordpress installer defines global ABSPATH/Version to prevent errors.
@@ -357,42 +355,42 @@
 
 <adhoc-task name="foo"><![CDATA[
 	class BarTask extends Task {
-          
-        function main() {
+		  
+		function main() {
 
-	        define( 'ABSPATH', '${build.dir.wp}' . '/');
-	          
-	        $base_dir = '${build.dir.wp}';
-	        define('WP_SITEURL', '${build.dir.actual}');
-	        define('WP_INSTALLING', true);
+			define( 'ABSPATH', '${build.dir.wp}' . '/');
+			  
+			$base_dir = '${build.dir.wp}';
+			define('WP_SITEURL', '${build.dir.actual}');
+			define('WP_INSTALLING', true);
 
-	        require_once('${build.dir.wp}/wp-load.php');
-	        require_once('${build.dir.wp}/wp-admin/includes/upgrade.php');
-	        require_once('${build.dir.wp}/wp-includes/wp-db.php');
+			require_once('${build.dir.wp}/wp-load.php');
+			require_once('${build.dir.wp}/wp-admin/includes/upgrade.php');
+			require_once('${build.dir.wp}/wp-includes/wp-db.php');
 
-	          
-	        $public = true;
-	        $result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
+			  
+			$public = true;
+			$result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
-	        //we need to update the db version for some reason
-	          update_option( 'db_version', $wp_db_version );
+			//we need to update the db version for some reason
+			  update_option( 'db_version', $wp_db_version );
 
-	        //edit this script, do not edit this class directly
-	        require('boot.php');
+			//edit this script, do not edit this class directly
+			require('boot.php');
 
 
-        }
-    }
-    
+		}
+	}
+	
 ]]>
 </adhoc-task>
 
 
 <!-- Delete readme -->
 <target name="delete-readme" description="Deletes readme and wp-config-sample">
-        <echo msg="deleting readme.html and wp-config-sample.php" />
-        <delete file="${build.dir.wp}/readme.html" />
-        <delete file="${build.dir.wp}/wp-config-sample.php" />
+		<echo msg="deleting readme.html and wp-config-sample.php" />
+		<delete file="${build.dir.wp}/readme.html" />
+		<delete file="${build.dir.wp}/wp-config-sample.php" />
 </target>
 
 
@@ -409,27 +407,27 @@
 
 <adhoc-task name="boo"><![CDATA[
 	class BooTask extends Task {
-          
-        function main() {
+		  
+		function main() {
 
-        	//this is crazy, blame wordpress
-        	global $domain, $path, $base, $admin_page_hooks, $ajax_results, $all_links, $allowedposttags, $allowedtags, $authordata, $bgcolor, $cache_categories, $cache_lastcommentmodified, $cache_lastpostdate, $cache_lastpostmodified, $cache_userdata, $category_cache, $class, $comment, $comment_cache, $comment_count_cache, $commentdata, $current_user, $day, $debug, $descriptions, $error, $feeds, $id, $is_apache, $is_IIS, $is_macIE, $is_winIE, $l10n, $locale, $link, $m, $map, $max_num_pages, $menu, $mode, $month, $month_abbrev, $monthnum, $more, $multipage, $names, $newday, $numpages, $page, $page_cache, $paged, $pagenow, $pages, $parent_file, $preview, $previousday, $previousweekday, $plugin_page, $post, $post_cache, $post_default_category, $post_default_title, $post_meta_cache, $postc, $postdata, $posts, $posts_per_page, $previousday, $request, $result, $richedit, $single, $submenu, $table_prefix, $targets, $timedifference, $timestart, $timeend, $updated_timestamp, $urls, $user_ID, $user_email, $user_identity, $user_level, $user_login, $user_pass_md5, $user_url, $weekday, $weekday_abbrev, $weekday_initial, $withcomments, $wp, $wp_broken_themes, $wp_db_version, $wp_did_header, $wp_did_template_redirect, $wp_file_description, $wp_filter, $wp_importers, $wp_plugins, $wp_taxonomies, $wp_the_query, $wp_themes, $wp_object_cache, $wp_query, $wp_queries, $wp_rewrite, $wp_roles, $wp_similiesreplace, $wp_smiliessearch, $wp_version, $wpcommentspopupfile, $wpcommentsjavascript, $wpdb;
+			//this is crazy, blame wordpress
+			global $domain, $path, $base, $admin_page_hooks, $ajax_results, $all_links, $allowedposttags, $allowedtags, $authordata, $bgcolor, $cache_categories, $cache_lastcommentmodified, $cache_lastpostdate, $cache_lastpostmodified, $cache_userdata, $category_cache, $class, $comment, $comment_cache, $comment_count_cache, $commentdata, $current_user, $day, $debug, $descriptions, $error, $feeds, $id, $is_apache, $is_IIS, $is_macIE, $is_winIE, $l10n, $locale, $link, $m, $map, $max_num_pages, $menu, $mode, $month, $month_abbrev, $monthnum, $more, $multipage, $names, $newday, $numpages, $page, $page_cache, $paged, $pagenow, $pages, $parent_file, $preview, $previousday, $previousweekday, $plugin_page, $post, $post_cache, $post_default_category, $post_default_title, $post_meta_cache, $postc, $postdata, $posts, $posts_per_page, $previousday, $request, $result, $richedit, $single, $submenu, $table_prefix, $targets, $timedifference, $timestart, $timeend, $updated_timestamp, $urls, $user_ID, $user_email, $user_identity, $user_level, $user_login, $user_pass_md5, $user_url, $weekday, $weekday_abbrev, $weekday_initial, $withcomments, $wp, $wp_broken_themes, $wp_db_version, $wp_did_header, $wp_did_template_redirect, $wp_file_description, $wp_filter, $wp_importers, $wp_plugins, $wp_taxonomies, $wp_the_query, $wp_themes, $wp_object_cache, $wp_query, $wp_queries, $wp_rewrite, $wp_roles, $wp_similiesreplace, $wp_smiliessearch, $wp_version, $wpcommentspopupfile, $wpcommentsjavascript, $wpdb;
 
 
-	        define('WP_USE_THEMES', false);
-	        require('${build.dir.wp}/wp-blog-header.php');
+			define('WP_USE_THEMES', false);
+			require('${build.dir.wp}/wp-blog-header.php');
 
-	        // edit this script, do not edit this class directly
-	        require('run.php');
-	    }
-    }
+			// edit this script, do not edit this class directly
+			require('run.php');
+		}
+	}
 ]]>
 </adhoc-task>
 
 <!-- Tarballs  
 *************************************************************  -->
 
-    <!-- zip -->
+	<!-- zip -->
 	<target name="wp-zip">
 
 		<!-- zip directory -->
@@ -437,13 +435,13 @@
 		
 	</target>
 
-     <target name="wp-zip-file">
+	 <target name="wp-zip-file">
 		<!-- zip file-->
 		<zip destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.zip" compression="zip">
 			<fileset dir="${build.dir.wp}">
-		 		<include name="${build.wp.tarball.file}" />
-	 		</fileset>
-	 	</zip>	
+				<include name="${build.wp.tarball.file}" />
+			</fileset>
+		</zip>	
 	</target>
 
 	
@@ -458,9 +456,9 @@
 		<!-- gzip file-->
 		<tar destfile="${build.wp.tarball.location}/${build.wp.tarball.name}.tar.gz" compression="gzip">
 			<fileset dir="${build.dir.wp}">
-		 		<include name="${build.wp.tarball.file}" />
-	 		</fileset>
-	 	</tar>	
+				<include name="${build.wp.tarball.file}" />
+			</fileset>
+		</tar>	
 	</target>
 
 
@@ -474,89 +472,12 @@
 
 	<phpdoc2 title="${build.wp.docs.name}" destdir="${build.wp.doc.output}" template="responsive">
 	   <fileset dir="${build.wp.docs.dir}">
-	      <include name="**/*.php" />
+		  <include name="**/*.php" />
 	   </fileset>
 	</phpdoc2>
 
 </target>
 
-
-<!-- PhpCodeSniffer
-
-http://pear.php.net/package/PHP_CodeSniffer
-Use: https://github.com/mrchrisadams/WordPress-Coding-Standards
-ToDo: Append this automatically see /assets/CodeSniffer
-
-*************************************************************  -->
-
-<target name="wp-sniff" description="Verify compliance with project code standard">
-
-	<!-- dir to hold the Codensniffer output  -->
-	<mkdir dir="${build.wp.sniff.output}" />
-
-	<phpcodesniffer haltonerror="false" format="summary" standard="WordPress" verbosity="1">
-        <formatter outfile="${build.wp.sniff.output.xml}" type="xml" />
-            <fileset dir="${build.wp.sniff.input}">
-                <include name="*.php" />
-            </fileset>
-    </phpcodesniffer>
-
-	<mkdir dir="${build.wp.sniff.output.temp}" />
-	<mkdir dir="${build.wp.sniff.dir.output.xml}" />
-  	
-	<!--  Let's make XML into HTML so we can read it , added to Html folder for now-->
-    <xslt todir="${build.wp.sniff.output.temp}" style="${build.wp.sniff.style}" >
-    	<fileset dir="${build.wp.sniff.output}">
-        	<include name="${build.wp.sniff.xml.file}" />
-  		</fileset>
-	</xslt>
-
-	<!-- Clean up  -->
-	<copy file="${build.wp.sniff.output.temp}/${build.wp.sniff.xml.file}" tofile="${build.wp.sniff.output.temp}/${build.wp.sniff.html.file}" overwrite="true"/> 
-	<delete file="${build.wp.sniff.output.temp}/${build.wp.sniff.xml.file}" />
-    <move file="${build.wp.sniff.output.temp}/${build.wp.sniff.html.file}" todir="${build.wp.sniff.output}" />
-	<move file="${build.wp.sniff.output.xml}" todir="${build.wp.sniff.dir.output.xml}" />
-	<delete dir="${build.wp.sniff.output.temp}" /> 
-
-
-</target>
-
-
-<!-- Copy-Paste detection
-# https://github.com/sebastianbergmann/phpcpd/
-#
-
-TODO Converting xml to html using /assets/pmd-html.xslt is broken
-*************************************************************  -->
-<target name="wp-cpd" description="Copy - Paste detection">
-
-	<phpcpd>
-		<fileset dir="${build.wp.sniff.dir}">
-			<include name="*.php" />
-	   </fileset>
-	   <formatter type="pmd" outfile="${build.wp.sniff.output}\${build.wp.copypaste.xml.file}" />
-	</phpcpd>
-
-</target>
-
-
-<!-- PHPMess detector
-# Fix pathing for output 
-# https://github.com/phpmd/phpmd
-*************************************************************  -->
-<target name="wp-mess" description="Mess Detector">
-	
-	<mkdir dir="${build.wp.sniff.output}" />
-	<!-- <mkdir dir="${build.wp.sniff.dir.output.temp}" /> -->
-
-	<phpmd>
-		<fileset dir="${build.wp.sniff.dir}">
-			<include name="*.php" />
-	   </fileset>
-	   <formatter type="html" outfile="${build.wp.sniff.output}\${build.wp.mess.html.file}"/>
-	</phpmd>
-
-</target>
 
 <!-- jsMin
 #  https://github.com/rgrove/jsmin-php/
@@ -565,7 +486,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 <target name="wp-min-js">
 	<jsMin targetDir="${build.wp.jsm.output}" failOnError="false">
 	  <fileset dir="${build.wp.jsmin.dir}">
-	    <include name="**/*.js"/>
+		<include name="**/*.js"/>
 	  </fileset>
 	</jsMin>
 </target>
@@ -611,7 +532,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 		
 		<phingcall target="installwordpress" />
 			
-        <echo msg="Copying wp-config.php" />
+		<echo msg="Copying wp-config.php" />
 
 		<copy file="${build.dir.wp}/wp-config-sample.php" tofile="${build.dir.wp}/wp-config.php" />
 
@@ -643,25 +564,25 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 		</if>
 
 		
-    <!--  Permissions - every system is different - customize this based on your environment.
-          this won't work on windows 
-    
-          <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
-          <chmod file="${build.dir.wp}" mode="0755" verbose="true" /> 
-    -->    
+	<!--  Permissions - every system is different - customize this based on your environment.
+		  this won't work on windows 
+	
+		  <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
+		  <chmod file="${build.dir.wp}" mode="0755" verbose="true" /> 
+	-->    
 
-        <!-- just a timestamp in wp-config.php -->
-        <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
+		<!-- just a timestamp in wp-config.php -->
+		<append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
 
-        <phingcall target="wpconfig" />
+		<phingcall target="wpconfig" />
 
-        <echo msg="Installing Wordpress" />
+		<echo msg="Installing Wordpress" />
 
-        <phingcall target="cleantmp" />
+		<phingcall target="cleantmp" />
 
-        <phingcall target="delete-readme" />
+		<phingcall target="delete-readme" />
 
-       <echo msg="All done" />
+	   <echo msg="All done" />
 
 	</target>
 
@@ -675,7 +596,7 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 
 		<phingcall target="installwordpress" />
 			
-        <echo msg="Copying wp-config.php" />
+		<echo msg="Copying wp-config.php" />
 
 		<copy file="${build.dir.wp}/wp-config-sample.php" tofile="${build.dir.wp}/wp-config.php" />
 
@@ -707,23 +628,23 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 		</if>
 
 		
-    <!--  Permissions - every system is different - customize this based on your environment.
-          this won't work on windows 
-    
-          <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
-          <chmod file="${build.dir.wp}" mode="0755" verbose="true" /> 
-    -->    
+	<!--  Permissions - every system is different - customize this based on your environment.
+		  this won't work on windows 
+	
+		  <chown file="${build.dir.wp}" user="www-data.www-data" verbose="true" />
+		  <chmod file="${build.dir.wp}" mode="0755" verbose="true" /> 
+	-->    
 
-        <!-- just a timestamp in wp-config.php -->
-        <append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
+		<!-- just a timestamp in wp-config.php -->
+		<append destFile="${build.dir.wp}/wp-config.php" text="${line.separator}${line.separator}/* WordPhing'd this install on ${buildtime} */${line.separator}" />
 
-        <phingcall target="wpconfig" />
+		<phingcall target="wpconfig" />
 
-        <echo msg="Installing Wordpress" />
+		<echo msg="Installing Wordpress" />
 
-        <phingcall target="cleantmp" />
+		<phingcall target="cleantmp" />
 
-       <echo msg="All done" />
+	   <echo msg="All done" />
 
 	</target>
 
@@ -741,67 +662,62 @@ TODO Converting xml to html using /assets/pmd-html.xslt is broken
 		<!-- FTP
 *************************************************************- -->
 
-	<target name="wp-ftp">
-	    <echo>Uploading files to FTP</echo>
-	    <ftpdeploy 
-	        host="${ftp.host}"
-	        port="${ftp.port}"
-	        username="${ftp.username}"
-	        password="${ftp.password}"
-	        dir="${ftp.dir}">
-	      <fileset dir="${ftp.source}"></fileset>
-	    </ftpdeploy>
-	    <echo>FTP Upload Finished!</echo>
-	</target>
+	<!-- <target name="wp-ftp">
+		<echo>Uploading files to FTP</echo>
+		<ftpdeploy 
+			host="${ftp.host}"
+			port="${ftp.port}"
+			username="${ftp.username}"
+			password="${ftp.password}"
+			dir="${ftp.dir}">
+		  <fileset dir="${ftp.source}"></fileset>
+		</ftpdeploy>
+		<echo>FTP Upload Finished!</echo>
+	</target> -->
 
 
-		<!-- Run Reports
-*************************************************************- -->
-  	<target name="wp-reports">
-  		<echo>Running PHP CodeSniffer</echo>
-		<phingcall target="wp-sniff" />
 
-		<echo>Running Copy-Paste Detector</echo>
-		<phingcall target="wp-cpd" />
 
-		<echo>Running PHP Mess Detector</echo>
-		<phingcall target="wp-mess" />
-	</target>
-
-    <!-- Display the available options 
+	<!-- Display the available options 
 ************************************************************* -->
 
-    <target name="help" description="Displays the available options">
+	<target name="help" description="Displays the available options">
 
-    	<echo msg="/ / /\ \ \  ___   _ __   __| |  / _ \| |__  (_) _ __    __ _ "  />
-    	<echo msg="\ \/  \/ / / _ \ | '__| / _` | / /_)/| '_ \ | || '_ \  / _` |"  />
-    	<echo msg="	\  /\  / | (_) || |   | (_| |/ ___/ | | | || || | | || (_| |"  />
-    	<echo msg="  \/  \/   \___/ |_|    \__,_|\/     |_| |_||_||_| |_| \__, |"  />
-    	<echo msg="                                                       |___/ "  />
-    	<echo msg="|| https://github.com/wycks/WordPhing || WordPhing is licensed under the MIT License ||" />
+		<echo msg="/ / /\ \ \  ___   _ __   __| |  / _ \| |__  (_) _ __    __ _ "  />
+		<echo msg="\ \/  \/ / / _ \ | '__| / _` | / /_)/| '_ \ | || '_ \  / _` |"  />
+		<echo msg="	\  /\  / | (_) || |   | (_| |/ ___/ | | | || || | | || (_| |"  />
+		<echo msg="  \/  \/   \___/ |_|    \__,_|\/     |_| |_||_||_| |_| \__, |"  />
+		<echo msg="                                                       |___/ "  />
+		<echo msg="|| https://github.com/wycks/WordPhing || WordPhing is licensed under the MIT License ||" />
 
-    	<echo msg="------------------" />
-        <echo msg="Build options" />
-        <echo msg="Please read the build.properties for more details" />
-        <echo msg="------------------" />
-        
-        <echo msg="$ phing wp-install          Creates a new database, downloads and installs WordPress, Plugins and Themes" />
-        <echo msg="$ phing wp-install-only     Downloads and installs WordPress, Plugins, Themes - no database setup" />
+		<echo msg="------------------" />
+		<echo msg="Build options" />
+		<echo msg="Please read the build.properties for more details" />
+		<echo msg="------------------" />
+		
+		<echo msg="$ phing wp-install          Creates a new database, downloads and installs WordPress, Plugins and Themes" />
+		<echo msg="$ phing wp-install-only     Downloads and installs WordPress, Plugins, Themes - no database setup" />
 
-        <echo msg="$ phing wp-db-dump          Export DB *.sql "/>
-        <echo msg="$ phing wp-ftp              FTP upload "/>
-        <echo msg="$ phing wp-run              Runs custom script run.php" />
-        <echo msg="$ phing wp-clean-all        Deletes directory and database, can run separately via wp-clean-files or wp-db-clean." />
+		<echo msg="$ phing wp-db-dump          Export DB *.sql "/>
+		<echo msg="$ phing wp-ftp              FTP upload this - option is commeneted out by default in build.xml and build.properties"/>
+		<echo msg="$ phing wp-run              Runs custom script found in run.php" />
+		<echo msg="$ phing wp-clean-all        Deletes directory and database, can run separately via wp-clean-files or wp-db-clean." />
 
-        <echo msg="$ phing wp-reports          Run CodeSniffer, PHP Mess, Copy-Paste Detector"/>
-        <echo msg="$ phing wp-min-js           Minify JavaScript "/>
+		<echo msg="$ phing wp-git-init         Initialize a git repo using"/>
+		<echo msg="$ phing wp-git-commit       Prompts for a commit msg/options before commit"/>
+		<echo msg="$ phing wp-git-clone         "/>
+		<echo msg="$ phing wp-git-push          "/>
+		<echo msg="$ phing wp-git-pull          "/>
+		<echo msg="$ phing wp-git-branch        "/>
+	
+
+		<echo msg="$ phing wp-min-js           Minify JavaScript "/>
 		<echo msg="$ phing wp-doc              PHP Documentor 2"/>
-		<echo msg="$ phing wp-sniff            CodeSniffer"/>
-        <echo msg="$ phing wp-zip              Creates a zip from Dir "/>
-        <echo msg="$ phing wp-zip-file         Creates a zip from file"/>
-        <echo msg="$ phing wp-gzip             Creates a gzip "/>
-        <echo msg="$ phing wp-gzip-file        Creates a gzip from file"/>
-        
-    </target>
+		<echo msg="$ phing wp-zip              Creates a zip from Dir "/>
+		<echo msg="$ phing wp-zip-file         Creates a zip from file"/>
+		<echo msg="$ phing wp-gzip             Creates a gzip "/>
+		<echo msg="$ phing wp-gzip-file        Creates a gzip from file"/>
+		
+	</target>
 
 </project>
