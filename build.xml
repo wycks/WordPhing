@@ -382,6 +382,10 @@
 			$result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
 	        //we need to update the db version for some reason
+
+	        require('${build.dir.wp}/wp-includes/version.php');
+	        update_option( 'db_version', $wp_db_version );
+
 	        //edit this script, do not edit this class directly
 
 	        require('${project.basedir}/boot.php');

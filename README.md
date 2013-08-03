@@ -7,7 +7,7 @@ WordPress build script using [Phing](http://www.phing.info/).
 - Simple config file and commands to run
 
 
-*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails/Grunt/Yeoman, etc). It should work right out of the box on most PHP stacks. Some of the advanced options might require additional installations of PHP/PEAR packages*
+*Phing has no dependencies other than PHP, so it will run anywhere PHP does (unlike Apache Ant/Cappicino/Rails/Grunt/, etc). It should work right out of the box on most PHP stacks. Some of the advanced options might require additional installations of PHP/PEAR packages*
 
 ## Features
 
@@ -15,7 +15,7 @@ WordPress build script using [Phing](http://www.phing.info/).
 
 - Creation of a new database (optional)
 - Downloads and installs WordPress (latest stable or nightly)
-- Download and installs plugins and/or themes (http transfer and zip format)
+- Download and installs plugins and/or themes (http transfer / zip format)
 - Appends info to your wp-config automatically
 - Runs the WP install script (by-passes the 5 minute install)
 - Custom install parameters (optional via `boot.php`)
