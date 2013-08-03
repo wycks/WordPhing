@@ -281,14 +281,21 @@
 		</if>
 
 		<!-- enable SAVEQUERIES debug to wp-config.php file -->
-		<!-- this needs to be appended to the above to look cleaner -->
+		<!-- this is a bit wierd  http://stackoverflow.com/questions/17936380/how-to-append-text-to-a-specific-place-in-a-file-using-phing -->
 		<if>
 			<isset property="build.wp.config.savequeries"/>
 			<then>
 
 				<echo msg="Setting SAVEQUERIES in wp-config.php" />
 				
-				<append destFile="${build.dir.wp}/wp-config.php" text="${line.separator} define('SAVEQUERIES', ${build.wp.config.savequeries} ); ${line.separator}" />
+				<reflexive file="${build.dir.wp}/wp-config.php">
+					<filterchain>
+						<replaceregexp>
+							<regexp pattern="define\('WP_DEBUG', true\);" replace="define('WP_DEBUG', true); ${line.separator}define('SAVEQUERIES', true);" />
+							<regexp pattern="define\('WP_DEBUG', false\);" replace="define('WP_DEBUG', false); ${line.separator}define('SAVEQUERIES', true);" />
+						</replaceregexp>
+					</filterchain>
+				</reflexive>
 					
 			</then>
 		</if>		
@@ -375,10 +382,9 @@
 			$result = wp_install( '${build.wp.title}', '${build.wp.user}', '${build.wp.email}', $public, '', '${build.wp.password}' );
 
 	        //we need to update the db version for some reason
-
-
 	        //edit this script, do not edit this class directly
-	        require('${build.dir.work}/boot.php');
+
+	        require('${project.basedir}/boot.php');
 
 		}
 	}
@@ -589,7 +595,7 @@
 
 
 		<!-- WordPress only installer * This will install WordPress (not the DB)
-*************************************************************- -->
+************************************************************* -->
 
 	<target name="wp-install-only" depends="prepare">
 
@@ -663,7 +669,7 @@
 		<!-- FTP
 *************************************************************- 
 
-	<!-- <target name="wp-ftp">
+	<target name="wp-ftp">
 		<echo>Uploading files to FTP</echo>
 		<ftpdeploy 
 			host="${ftp.host}"
@@ -675,10 +681,6 @@
 		</ftpdeploy>
 		<echo>FTP Upload Finished!</echo>
 	</target> -->
-
--->
-
-
 
 	<!-- Display the available options 
 ************************************************************* -->
